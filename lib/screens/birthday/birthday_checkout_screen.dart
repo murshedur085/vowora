@@ -54,6 +54,10 @@ class _BirthdayCheckoutScreenState extends State<BirthdayCheckoutScreen> {
       _phoneController.text = auth.userProfile!.phone;
       _emailController.text = auth.userProfile!.email;
     }
+    final selectedVenue = context.read<BirthdayProvider>().selectedVenue;
+    if (selectedVenue != null) {
+      _venueController.text = selectedVenue.bookingAddress;
+    }
     _loadDemoHistory();
   }
 
@@ -170,7 +174,7 @@ class _BirthdayCheckoutScreenState extends State<BirthdayCheckoutScreen> {
                   const SizedBox(height: 16),
 
                   // 2. Event Summary Card
-                  _buildEventSummaryCard(date, slot),
+                  _buildEventSummaryCard(date, slot, provider),
 
                   const SizedBox(height: 16),
 
@@ -280,7 +284,11 @@ class _BirthdayCheckoutScreenState extends State<BirthdayCheckoutScreen> {
     );
   }
 
-  Widget _buildEventSummaryCard(DateTime date, BirthdayTimeSlot slot) {
+  Widget _buildEventSummaryCard(
+    DateTime date,
+    BirthdayTimeSlot slot,
+    BirthdayProvider provider,
+  ) {
     return BirthdayTheme.blushFloralCard(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -328,6 +336,37 @@ class _BirthdayCheckoutScreenState extends State<BirthdayCheckoutScreen> {
                 ),
               ],
             ),
+            if (provider.selectedVenue != null) ...[
+              const Divider(height: 20, color: BirthdayTheme.subtleBorder),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(
+                    Icons.restaurant_rounded,
+                    size: 16,
+                    color: BirthdayTheme.mutedGold,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          provider.selectedVenue!.name,
+                          style: BirthdayTheme.body.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          provider.selectedVenue!.location,
+                          style: BirthdayTheme.bodySmall,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ],
         ),
       ),
@@ -351,6 +390,11 @@ class _BirthdayCheckoutScreenState extends State<BirthdayCheckoutScreen> {
             color: BirthdayTheme.mutedGold,
           ),
           children: [
+            if (provider.selectedVenue != null)
+              _billLine(
+                'Venue · ${provider.selectedVenue!.name} (sample estimate)',
+                _formatCurrency(provider.selectedVenue!.estimatedPrice),
+              ),
             for (final category in BirthdayServiceCategory.values) ...[
               _billCategoryRows(provider, category),
             ],

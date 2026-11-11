@@ -14,7 +14,7 @@ class GuestManagementStepView extends StatefulWidget {
 
 class _GuestManagementStepViewState extends State<GuestManagementStepView> {
   String _searchQuery = '';
-  String _statusFilter = 'All'; // All, Confirmed, Pending, Declined
+  final String _statusFilter = 'All'; // All, Confirmed, Pending, Declined
 
   @override
   Widget build(BuildContext context) {

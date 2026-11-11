@@ -10,6 +10,7 @@ import '../models/birthday/birthday_service_models.dart';
 import '../models/birthday/birthday_booking_model.dart';
 import '../models/birthday/birthday_payment_model.dart';
 import '../models/birthday/birthday_shared_photo_model.dart';
+import '../models/birthday/birthday_venue.dart';
 import '../screens/birthday/services/birthday_service.dart';
 import '../services/supabase_birthday_service.dart';
 
@@ -32,6 +33,7 @@ class BirthdayProvider extends ChangeNotifier {
   DateTime? _selectedBookingDate;
   BirthdayTimeSlot? _selectedBookingSlot;
   String? _activeReservationToken;
+  BirthdayVenue? _selectedVenue;
 
   // Getters
   List<BirthdayEvent> get events => _events;
@@ -46,37 +48,50 @@ class BirthdayProvider extends ChangeNotifier {
 
   // Service & Booking Getters
   List<BirthdayServicePackage> get packages => _packages;
-  List<BirthdayServiceCartItem> get serviceCart => List.unmodifiable(_serviceCart);
+  List<BirthdayServiceCartItem> get serviceCart =>
+      List.unmodifiable(_serviceCart);
   List<BirthdayBooking> get userBookings => _userBookings;
   List<BirthdaySharedPhoto> get sharedPhotos => _sharedPhotos;
   DateTime? get selectedBookingDate => _selectedBookingDate;
   BirthdayTimeSlot? get selectedBookingSlot => _selectedBookingSlot;
   String? get activeReservationToken => _activeReservationToken;
+  BirthdayVenue? get selectedVenue => _selectedVenue;
 
   int get cartItemCount => _serviceCart.length;
-  double get cartSubtotal => _serviceCart.fold(0.0, (sum, item) => sum + item.totalCost);
-  double get cartServiceFee => cartSubtotal > 0 ? (cartSubtotal * 0.03).roundToDouble() : 0.0;
+  double get cartSubtotal =>
+      _serviceCart.fold(0.0, (sum, item) => sum + item.totalCost) +
+      (_selectedVenue?.estimatedPrice ?? 0);
+  double get cartServiceFee =>
+      cartSubtotal > 0 ? (cartSubtotal * 0.03).roundToDouble() : 0.0;
   double get cartTotal => cartSubtotal + cartServiceFee;
 
   // ===== Derived Stats =====
-  List<BirthdayEvent> get upcomingEvents => _events.where((e) => e.daysRemaining > 0).toList()
-    ..sort((a, b) => a.eventDate.compareTo(b.eventDate));
+  List<BirthdayEvent> get upcomingEvents =>
+      _events.where((e) => e.daysRemaining > 0).toList()
+        ..sort((a, b) => a.eventDate.compareTo(b.eventDate));
 
   int get totalTasksCompleted => _tasks.where((t) => t.isCompleted).length;
   int get totalTasksPending => _tasks.where((t) => !t.isCompleted).length;
-  double get taskCompletionPercent => _tasks.isEmpty ? 0 : (totalTasksCompleted / _tasks.length * 100);
+  double get taskCompletionPercent =>
+      _tasks.isEmpty ? 0 : (totalTasksCompleted / _tasks.length * 100);
 
-  double get totalEstimatedBudget => _expenses.fold(0, (s, e) => s + e.estimatedCost);
-  double get totalActualSpending => _expenses.fold(0, (s, e) => s + e.actualCost);
-  double get remainingBudget => (_activeEvent?.totalBudget ?? 0) - totalActualSpending;
+  double get totalEstimatedBudget =>
+      _expenses.fold(0, (s, e) => s + e.estimatedCost);
+  double get totalActualSpending =>
+      _expenses.fold(0, (s, e) => s + e.actualCost);
+  double get remainingBudget =>
+      (_activeEvent?.totalBudget ?? 0) - totalActualSpending;
   double get budgetUtilization => (_activeEvent?.totalBudget ?? 0) == 0
       ? 0
       : (totalActualSpending / _activeEvent!.totalBudget * 100).clamp(0, 999);
 
   int get totalInvited => _guests.length;
-  int get confirmedGuests => _guests.where((g) => g.rsvpStatus == 'accepted').length;
-  int get pendingGuests => _guests.where((g) => g.rsvpStatus == 'pending').length;
-  int get declinedGuests => _guests.where((g) => g.rsvpStatus == 'declined').length;
+  int get confirmedGuests =>
+      _guests.where((g) => g.rsvpStatus == 'accepted').length;
+  int get pendingGuests =>
+      _guests.where((g) => g.rsvpStatus == 'pending').length;
+  int get declinedGuests =>
+      _guests.where((g) => g.rsvpStatus == 'declined').length;
 
   double get eventReadiness {
     if (_activeEvent == null) return 0;
@@ -89,7 +104,10 @@ class BirthdayProvider extends ChangeNotifier {
     }
     // Has guests
     if (_guests.isNotEmpty) {
-      score += (_guests.where((g) => g.rsvpStatus == 'accepted').length / _guests.length * 100);
+      score +=
+          (_guests.where((g) => g.rsvpStatus == 'accepted').length /
+          _guests.length *
+          100);
       factors++;
     }
     // Has budget set
@@ -98,7 +116,8 @@ class BirthdayProvider extends ChangeNotifier {
       factors++;
     }
     // Theme selected
-    if (_activeEvent!.theme.isNotEmpty && _activeEvent!.theme != 'Minimal Classy') {
+    if (_activeEvent!.theme.isNotEmpty &&
+        _activeEvent!.theme != 'Minimal Classy') {
       score += 100;
       factors++;
     }
@@ -162,21 +181,27 @@ class BirthdayProvider extends ChangeNotifier {
     List<BirthdayServiceAddon>? addons,
     String customNotes = '',
   }) {
-    final existingIdx = _serviceCart.indexWhere((item) => item.package.id == package.id);
+    final existingIdx = _serviceCart.indexWhere(
+      (item) => item.package.id == package.id,
+    );
     if (existingIdx != -1) {
       _serviceCart[existingIdx] = BirthdayServiceCartItem(
         package: package,
         quantity: quantity,
         selectedAddons: addons ?? _serviceCart[existingIdx].selectedAddons,
-        customNotes: customNotes.isNotEmpty ? customNotes : _serviceCart[existingIdx].customNotes,
+        customNotes: customNotes.isNotEmpty
+            ? customNotes
+            : _serviceCart[existingIdx].customNotes,
       );
     } else {
-      _serviceCart.add(BirthdayServiceCartItem(
-        package: package,
-        quantity: quantity,
-        selectedAddons: addons ?? [],
-        customNotes: customNotes,
-      ));
+      _serviceCart.add(
+        BirthdayServiceCartItem(
+          package: package,
+          quantity: quantity,
+          selectedAddons: addons ?? [],
+          customNotes: customNotes,
+        ),
+      );
     }
     notifyListeners();
   }
@@ -212,6 +237,16 @@ class BirthdayProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void selectBirthdayVenue(BirthdayVenue venue) {
+    _selectedVenue = venue;
+    notifyListeners();
+  }
+
+  void clearBirthdayVenue() {
+    _selectedVenue = null;
+    notifyListeners();
+  }
+
   // ===== BOOKING CALENDAR & SLOTS =====
   void selectDateAndSlot(DateTime date, BirthdayTimeSlot slot) {
     _selectedBookingDate = date;
@@ -220,7 +255,9 @@ class BirthdayProvider extends ChangeNotifier {
   }
 
   Future<bool> reserveSelectedSlot() async {
-    if (_selectedBookingDate == null || _selectedBookingSlot == null) return false;
+    if (_selectedBookingDate == null || _selectedBookingSlot == null) {
+      return false;
+    }
     final token = 'res_${DateTime.now().millisecondsSinceEpoch}';
     final success = await SupabaseBirthdayService.reserveSlotTemporary(
       date: _selectedBookingDate!,
@@ -237,7 +274,10 @@ class BirthdayProvider extends ChangeNotifier {
 
   Future<void> releaseActiveSlot() async {
     if (_selectedBookingDate != null && _selectedBookingSlot != null) {
-      await SupabaseBirthdayService.releaseSlot(_selectedBookingDate!, _selectedBookingSlot!);
+      await SupabaseBirthdayService.releaseSlot(
+        _selectedBookingDate!,
+        _selectedBookingSlot!,
+      );
       _activeReservationToken = null;
       notifyListeners();
     }

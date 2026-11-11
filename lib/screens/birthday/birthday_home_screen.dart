@@ -1301,69 +1301,73 @@ class _BirthdayHomeScreenState extends State<BirthdayHomeScreen> {
   Widget _buildFeatureItem(_FeatureConfig item) {
     return _buildBlushFloralCardContainer(
       onTap: item.onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFFFAF2E6),
-                    Color(0xFFF2DFC2),
-                    Color(0xFFE4C69B),
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFFFAF2E6),
+                      Color(0xFFF2DFC2),
+                      Color(0xFFE4C69B),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: const Color(0xFFD4B179).withValues(alpha: 0.65),
+                    width: 1.0,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFC89B55).withValues(alpha: 0.22),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
+                    ),
                   ],
                 ),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(
-                  color: const Color(0xFFD4B179).withValues(alpha: 0.65),
-                  width: 1.0,
+                child: Icon(
+                  item.icon,
+                  color: const Color(0xFF7A4E2B),
+                  size: 22,
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFFC89B55).withValues(alpha: 0.22),
-                    blurRadius: 8,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
               ),
-              child: Icon(
-                item.icon,
-                color: const Color(0xFF7A4E2B),
-                size: 22,
+              const SizedBox(height: 8),
+              Text(
+                item.title,
+                style: GoogleFonts.playfairDisplay(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: const Color(0xFF38231D),
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              item.title,
-              style: GoogleFonts.playfairDisplay(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xFF38231D),
+              const SizedBox(height: 2),
+              Text(
+                item.subtitle,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w500,
+                  color: const Color(0xFF5D4037).withValues(alpha: 0.82),
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 2),
-            Text(
-              item.subtitle,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 10.5,
-                fontWeight: FontWeight.w500,
-                color: const Color(0xFF5D4037).withValues(alpha: 0.82),
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

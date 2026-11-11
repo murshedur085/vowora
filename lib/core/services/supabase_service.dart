@@ -65,7 +65,7 @@ class SupabaseService {
         password: password,
       );
       return response;
-    } on AuthException catch (e) {
+    } on AuthException {
       throw Exception('Incorrect email or password. Please try again.');
     } catch (e) {
       throw Exception(

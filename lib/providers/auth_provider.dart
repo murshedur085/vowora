@@ -101,22 +101,20 @@ class AuthProvider extends ChangeNotifier {
             return;
           }
 
-          if (session != null) {
-            _userProfile = _profileFromSupabaseUser(session.user);
-            
-            // Only re-verify MFA requirement on initial session, signedIn, or if currently unauthenticated
-            if (_status == AuthStatus.unauthenticated ||
-                event == AuthChangeEvent.signedIn ||
-                event == AuthChangeEvent.initialSession) {
-              await _checkMfaRequirement();
-            }
-
-            notifyListeners();
-            if (!_needsMfaVerification && !_isEnrollingMfa && _status == AuthStatus.authenticated) {
-              _refreshProfileInBackground();
-            }
+          _userProfile = _profileFromSupabaseUser(session.user);
+          
+          // Only re-verify MFA requirement on initial session, signedIn, or if currently unauthenticated
+          if (_status == AuthStatus.unauthenticated ||
+              event == AuthChangeEvent.signedIn ||
+              event == AuthChangeEvent.initialSession) {
+            await _checkMfaRequirement();
           }
-        });
+
+          notifyListeners();
+          if (!_needsMfaVerification && !_isEnrollingMfa && _status == AuthStatus.authenticated) {
+            _refreshProfileInBackground();
+          }
+                });
   }
 
   UserProfile _profileFromSupabaseUser(User user) {

@@ -35,7 +35,6 @@ import '../screens/inspiration/inspiration_screen.dart';
 import '../screens/profile/profile_screen.dart';
 import '../screens/profile/settings_screen.dart';
 import '../screens/profile/personal_information_screen.dart';
-import '../screens/profile/settings_screen.dart';
 import '../screens/profile/mfa_setup_screen.dart';
 import '../screens/legal/terms_privacy_screen.dart';
 import '../screens/conference/c_landingpage.dart';

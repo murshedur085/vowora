@@ -5,6 +5,7 @@ import '../../providers/birthday_provider.dart';
 import '../../models/birthday/birthday_service_models.dart';
 import 'core/birthday_theme.dart';
 import 'birthday_booking_calendar_screen.dart';
+import 'birthday_venue_selection_screen.dart';
 
 class BirthdayServiceSelectionScreen extends StatefulWidget {
   final BirthdayServiceCategory initialCategory;
@@ -32,7 +33,9 @@ class _BirthdayServiceSelectionScreenState
 
   String _formatCurrency(num amount) {
     final absAmount = amount.abs();
-    final formatted = absAmount.toStringAsFixed(0).replaceAllMapped(
+    final formatted = absAmount
+        .toStringAsFixed(0)
+        .replaceAllMapped(
           RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
           (m) => '${m[1]},',
         );
@@ -64,7 +67,10 @@ class _BirthdayServiceSelectionScreenState
                 padding: const EdgeInsets.only(right: 16),
                 child: Center(
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
                         colors: [
@@ -73,7 +79,10 @@ class _BirthdayServiceSelectionScreenState
                         ],
                       ),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: BirthdayTheme.champagneBorder, width: 0.8),
+                      border: Border.all(
+                        color: BirthdayTheme.champagneBorder,
+                        width: 0.8,
+                      ),
                     ),
                     child: Text(
                       '${provider.cartItemCount} Selected',
@@ -101,6 +110,8 @@ class _BirthdayServiceSelectionScreenState
               // 1. Category Switcher Tabs
               _buildCategoryTabs(),
 
+              _buildVenueSelector(context, provider),
+
               const SizedBox(height: 8),
 
               // 2. Package List
@@ -113,7 +124,10 @@ class _BirthdayServiceSelectionScreenState
                         ),
                       )
                     : ListView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
                         physics: const BouncingScrollPhysics(),
                         itemCount: packages.length,
                         itemBuilder: (context, index) {
@@ -124,11 +138,84 @@ class _BirthdayServiceSelectionScreenState
               ),
 
               // 3. Bottom Selected Services Summary Tray
-              if (provider.cartItemCount > 0)
+              if (provider.cartItemCount > 0 || provider.selectedVenue != null)
                 _buildCartSummaryTray(context, provider),
             ],
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildVenueSelector(BuildContext context, BirthdayProvider provider) {
+    final venue = provider.selectedVenue;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+      child: BirthdayTheme.blushFloralCard(
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BirthdayTheme.champagneGoldIconDecoration(
+                  radius: 12,
+                ),
+                child: const Icon(
+                  Icons.restaurant_rounded,
+                  color: BirthdayTheme.darkWarmBrown,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 11),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      venue?.name ?? 'Restaurant & Venue',
+                      style: BirthdayTheme.body.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      venue == null
+                          ? 'Choose a sample Sylhet venue for your event'
+                          : 'Sample estimate: ${_formatCurrency(venue.estimatedPrice)}',
+                      style: BirthdayTheme.bodySmall,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              TextButton(
+                onPressed: () async {
+                  await Navigator.push<void>(
+                    context,
+                    MaterialPageRoute<void>(
+                      builder: (_) => const BirthdayVenueSelectionScreen(),
+                    ),
+                  );
+                },
+                child: Text(venue == null ? 'Choose' : 'Change'),
+              ),
+              if (venue != null)
+                IconButton(
+                  tooltip: 'Remove venue',
+                  onPressed: provider.clearBirthdayVenue,
+                  icon: const Icon(
+                    Icons.close_rounded,
+                    color: BirthdayTheme.warmBrownMuted,
+                    size: 19,
+                  ),
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -150,6 +237,9 @@ class _BirthdayServiceSelectionScreenState
             case BirthdayServiceCategory.decoration:
               iconData = Icons.celebration_rounded;
               break;
+            case BirthdayServiceCategory.entertainment:
+              iconData = Icons.music_note_rounded;
+              break;
           }
 
           return Expanded(
@@ -158,15 +248,23 @@ class _BirthdayServiceSelectionScreenState
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 margin: const EdgeInsets.symmetric(horizontal: 4),
-                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 10,
+                  horizontal: 8,
+                ),
                 decoration: isSelected
                     ? BoxDecoration(
                         gradient: BirthdayTheme.blushFloralGradient,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: BirthdayTheme.champagneBorder, width: 1.2),
+                        border: Border.all(
+                          color: BirthdayTheme.champagneBorder,
+                          width: 1.2,
+                        ),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFFC89B55).withValues(alpha: 0.18),
+                            color: const Color(
+                              0xFFC89B55,
+                            ).withValues(alpha: 0.18),
                             blurRadius: 10,
                             offset: const Offset(0, 3),
                           ),
@@ -175,7 +273,10 @@ class _BirthdayServiceSelectionScreenState
                     : BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.6),
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: BirthdayTheme.subtleBorder, width: 0.8),
+                        border: Border.all(
+                          color: BirthdayTheme.subtleBorder,
+                          width: 0.8,
+                        ),
                       ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -192,10 +293,14 @@ class _BirthdayServiceSelectionScreenState
                       cat.displayName.split(' ').first,
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 12,
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                        fontWeight: isSelected
+                            ? FontWeight.bold
+                            : FontWeight.w500,
                         color: isSelected
                             ? BirthdayTheme.darkWarmBrown
-                            : BirthdayTheme.warmBrownMuted.withValues(alpha: 0.7),
+                            : BirthdayTheme.warmBrownMuted.withValues(
+                                alpha: 0.7,
+                              ),
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -218,7 +323,8 @@ class _BirthdayServiceSelectionScreenState
     final isInCart = provider.isPackageInCart(package.id);
     final cartItem = provider.getCartItem(package.id);
     final isPerPerson = package.priceUnit == 'per_person';
-    final currentQty = cartItem?.quantity ?? _cateringHeadcounts[package.id] ?? 25;
+    final currentQty =
+        cartItem?.quantity ?? _cateringHeadcounts[package.id] ?? 25;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
@@ -239,7 +345,10 @@ class _BirthdayServiceSelectionScreenState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BirthdayTheme.champagneGoldIconDecoration(
                       radius: 8,
                       borderWidth: 0.8,
@@ -270,7 +379,9 @@ class _BirthdayServiceSelectionScreenState
                         isPerPerson ? 'per guest' : 'full package',
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 11,
-                          color: BirthdayTheme.warmBrownMuted.withValues(alpha: 0.75),
+                          color: BirthdayTheme.warmBrownMuted.withValues(
+                            alpha: 0.75,
+                          ),
                         ),
                       ),
                     ],
@@ -369,13 +480,22 @@ class _BirthdayServiceSelectionScreenState
                               color: BirthdayTheme.darkWarmBrown,
                             ),
                             padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                            constraints: const BoxConstraints(
+                              minWidth: 32,
+                              minHeight: 32,
+                            ),
                             onPressed: currentQty > 10
                                 ? () {
                                     final newQty = currentQty - 5;
-                                    setState(() => _cateringHeadcounts[package.id] = newQty);
+                                    setState(
+                                      () => _cateringHeadcounts[package.id] =
+                                          newQty,
+                                    );
                                     if (isInCart) {
-                                      provider.updateCartItemQuantity(package.id, newQty);
+                                      provider.updateCartItemQuantity(
+                                        package.id,
+                                        newQty,
+                                      );
                                     }
                                   }
                                 : null,
@@ -398,12 +518,20 @@ class _BirthdayServiceSelectionScreenState
                               color: BirthdayTheme.darkWarmBrown,
                             ),
                             padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                            constraints: const BoxConstraints(
+                              minWidth: 32,
+                              minHeight: 32,
+                            ),
                             onPressed: () {
                               final newQty = currentQty + 5;
-                              setState(() => _cateringHeadcounts[package.id] = newQty);
+                              setState(
+                                () => _cateringHeadcounts[package.id] = newQty,
+                              );
                               if (isInCart) {
-                                provider.updateCartItemQuantity(package.id, newQty);
+                                provider.updateCartItemQuantity(
+                                  package.id,
+                                  newQty,
+                                );
                               }
                             },
                           ),
@@ -427,7 +555,9 @@ class _BirthdayServiceSelectionScreenState
                 ),
                 const SizedBox(height: 6),
                 ...package.availableAddons.map((addon) {
-                  final isAddonSelected = cartItem?.selectedAddons.any((a) => a.id == addon.id) ?? false;
+                  final isAddonSelected =
+                      cartItem?.selectedAddons.any((a) => a.id == addon.id) ??
+                      false;
 
                   return InkWell(
                     onTap: isInCart
@@ -445,7 +575,9 @@ class _BirthdayServiceSelectionScreenState
                             size: 18,
                             color: isAddonSelected
                                 ? const Color(0xFFB0895A)
-                                : BirthdayTheme.warmBrownMuted.withValues(alpha: 0.5),
+                                : BirthdayTheme.warmBrownMuted.withValues(
+                                    alpha: 0.5,
+                                  ),
                           ),
                           const SizedBox(width: 8),
                           Expanded(
@@ -488,7 +620,10 @@ class _BirthdayServiceSelectionScreenState
                           ),
                         ),
                         onPressed: () => provider.removeCartItem(package.id),
-                        icon: const Icon(Icons.remove_circle_outline_rounded, size: 18),
+                        icon: const Icon(
+                          Icons.remove_circle_outline_rounded,
+                          size: 18,
+                        ),
                         label: const Text('Remove from Event Plan'),
                       )
                     : ElevatedButton.icon(
@@ -500,15 +635,22 @@ class _BirthdayServiceSelectionScreenState
                           );
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Added "${package.name}" to your celebration!'),
+                              content: Text(
+                                'Added "${package.name}" to your celebration!',
+                              ),
                               backgroundColor: BirthdayTheme.darkWarmBrown,
                               duration: const Duration(seconds: 2),
                               behavior: SnackBarBehavior.floating,
                             ),
                           );
                         },
-                        icon: const Icon(Icons.add_circle_outline_rounded, size: 18),
-                        label: Text('Select for Celebration • ${_formatCurrency(isPerPerson ? package.price * currentQty : package.price)}'),
+                        icon: const Icon(
+                          Icons.add_circle_outline_rounded,
+                          size: 18,
+                        ),
+                        label: Text(
+                          'Select for Celebration • ${_formatCurrency(isPerPerson ? package.price * currentQty : package.price)}',
+                        ),
                       ),
               ),
             ],
@@ -518,7 +660,11 @@ class _BirthdayServiceSelectionScreenState
     );
   }
 
-  Widget _buildCartSummaryTray(BuildContext context, BirthdayProvider provider) {
+  Widget _buildCartSummaryTray(
+    BuildContext context,
+    BirthdayProvider provider,
+  ) {
+    final venue = provider.selectedVenue;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -541,7 +687,11 @@ class _BirthdayServiceSelectionScreenState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${provider.cartItemCount} Services Selected',
+                    [
+                      if (venue != null) '1 venue',
+                      if (provider.cartItemCount > 0)
+                        '${provider.cartItemCount} services',
+                    ].join(' · '),
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 12,
                       color: BirthdayTheme.warmBrownMuted,

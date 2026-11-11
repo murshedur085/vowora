@@ -4,7 +4,8 @@ import 'dart:convert';
 enum BirthdayServiceCategory {
   catering,
   photography,
-  decoration;
+  decoration,
+  entertainment;
 
   String get displayName {
     switch (this) {
@@ -14,6 +15,8 @@ enum BirthdayServiceCategory {
         return 'Photography & Reels';
       case BirthdayServiceCategory.decoration:
         return 'Styling & Decoration';
+      case BirthdayServiceCategory.entertainment:
+        return 'DJ & Entertainment';
     }
   }
 
@@ -25,6 +28,8 @@ enum BirthdayServiceCategory {
         return 'photography';
       case BirthdayServiceCategory.decoration:
         return 'decoration';
+      case BirthdayServiceCategory.entertainment:
+        return 'entertainment';
     }
   }
 
@@ -36,6 +41,10 @@ enum BirthdayServiceCategory {
       case 'photography':
       case 'photo':
         return BirthdayServiceCategory.photography;
+      case 'entertainment':
+      case 'dj':
+      case 'music':
+        return BirthdayServiceCategory.entertainment;
       case 'decoration':
       case 'decor':
       default:
