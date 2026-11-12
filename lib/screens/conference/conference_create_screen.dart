@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../../models/conference/conference_event.dart';
 import '../../services/conference_repository.dart';
 import 'conference_wizard_screen.dart';
 
 class ConferenceCreateScreen extends StatefulWidget {
-  const ConferenceCreateScreen({super.key});
+  const ConferenceCreateScreen({super.key, this.conference});
+
+  final ConferenceEvent? conference;
 
   @override
   State<ConferenceCreateScreen> createState() => _ConferenceCreateScreenState();
@@ -12,13 +15,31 @@ class ConferenceCreateScreen extends StatefulWidget {
 
 class _ConferenceCreateScreenState extends State<ConferenceCreateScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _titleController = TextEditingController();
-  final _sloganController = TextEditingController();
-  final _organizerController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _locationController = TextEditingController(text: 'Dhaka');
+  late final TextEditingController _titleController;
+  late final TextEditingController _sloganController;
+  late final TextEditingController _organizerController;
+  late final TextEditingController _emailController;
+  late final TextEditingController _locationController;
   DateTime? _eventDate;
   bool _isSaving = false;
+
+  bool get _isEditing => widget.conference != null;
+
+  @override
+  void initState() {
+    super.initState();
+    final event = widget.conference;
+    _titleController = TextEditingController(text: event?.title ?? '');
+    _sloganController = TextEditingController(text: event?.slogan ?? '');
+    _organizerController = TextEditingController(
+      text: event?.organizerName ?? '',
+    );
+    _emailController = TextEditingController(text: event?.organizerEmail ?? '');
+    _locationController = TextEditingController(
+      text: event?.location ?? 'Dhaka',
+    );
+    _eventDate = event?.eventDate;
+  }
 
   @override
   void dispose() {
@@ -40,10 +61,10 @@ class _ConferenceCreateScreenState extends State<ConferenceCreateScreen> {
       builder: (context, child) => Theme(
         data: Theme.of(context).copyWith(
           colorScheme: const ColorScheme.light(
-            primary: Color(0xFF3E2C26),
-            onPrimary: Colors.white,
-            surface: Color(0xFFFFFDF9),
-            onSurface: Color(0xFF3E2C26),
+            primary: Color(0xFFE9DED5),
+            onPrimary: Colors.black,
+            surface: Colors.white,
+            onSurface: Colors.black,
           ),
         ),
         child: child!,
@@ -61,6 +82,20 @@ class _ConferenceCreateScreenState extends State<ConferenceCreateScreen> {
 
     setState(() => _isSaving = true);
     try {
+      if (_isEditing) {
+        final updated = await ConferenceRepository.updateConferenceDetails(
+          event: widget.conference!,
+          title: _titleController.text,
+          slogan: _sloganController.text,
+          organizerName: _organizerController.text,
+          organizerEmail: _emailController.text,
+          location: _locationController.text,
+        );
+        if (!mounted) return;
+        Navigator.of(context).pop(updated);
+        return;
+      }
+
       final event = await ConferenceRepository.createConference(
         title: _titleController.text,
         slogan: _sloganController.text,
@@ -90,131 +125,165 @@ class _ConferenceCreateScreenState extends State<ConferenceCreateScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const textColor = Color(0xFF3E2C26);
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8F1EA),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF8F1EA),
-        foregroundColor: textColor,
-        elevation: 0,
-        title: const Text(
-          'Create Conference',
-          style: TextStyle(color: textColor),
+    const textColor = Colors.black;
+    final theme = Theme.of(context);
+    return Theme(
+      data: theme.copyWith(
+        brightness: Brightness.light,
+        colorScheme: const ColorScheme.light(
+          primary: Color(0xFFE9DED5),
+          onPrimary: Colors.black,
+          surface: Colors.white,
+          onSurface: Colors.black,
+        ),
+        textTheme: theme.textTheme.apply(
+          bodyColor: Colors.black,
+          displayColor: Colors.black,
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFFF8F1EA),
+          foregroundColor: Colors.black,
+          titleTextStyle: TextStyle(color: Colors.black, fontSize: 20),
+        ),
+        inputDecorationTheme: theme.inputDecorationTheme.copyWith(
+          labelStyle: const TextStyle(color: Colors.black),
+          hintStyle: const TextStyle(color: Colors.black),
+          errorStyle: const TextStyle(color: Colors.black),
+        ),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(foregroundColor: Colors.black),
         ),
       ),
-      body: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(22, 12, 22, 28),
-            children: [
-              Text(
-                'Start with the details',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: textColor,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Your conference and provider selections will be saved together.',
-                style: TextStyle(color: Color(0xFF8A7A75), height: 1.4),
-              ),
-              const SizedBox(height: 24),
-              _field(
-                controller: _titleController,
-                label: 'Conference Title',
-                validator: _required,
-              ),
-              const SizedBox(height: 14),
-              _field(
-                controller: _sloganController,
-                label: 'Slogan',
-                validator: _required,
-              ),
-              const SizedBox(height: 14),
-              InkWell(
-                onTap: _isSaving ? null : _selectDate,
-                borderRadius: BorderRadius.circular(14),
-                child: InputDecorator(
-                  decoration: const InputDecoration(
-                    labelText: 'Event Date',
-                    labelStyle: TextStyle(color: Color(0xFF6E5B54)),
-                    floatingLabelStyle: TextStyle(color: textColor),
-                    prefixIcon: Icon(
-                      Icons.calendar_today_outlined,
-                      color: textColor,
-                    ),
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(14)),
-                    ),
-                  ),
-                  child: Text(
-                    _eventDate == null
-                        ? 'Choose a date'
-                        : MaterialLocalizations.of(
-                            context,
-                          ).formatMediumDate(_eventDate!),
-                    style: TextStyle(
-                      color: _eventDate == null
-                          ? const Color(0xFF8A7A75)
-                          : textColor,
-                    ),
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF8F1EA),
+        appBar: AppBar(
+          backgroundColor: const Color(0xFFF8F1EA),
+          foregroundColor: textColor,
+          elevation: 0,
+          title: Text(
+            _isEditing ? 'Edit Conference' : 'Create Conference',
+            style: const TextStyle(color: textColor),
+          ),
+        ),
+        body: SafeArea(
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(22, 12, 22, 28),
+              children: [
+                Text(
+                  _isEditing
+                      ? 'Update conference details'
+                      : 'Start with the details',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: textColor,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
-              ),
-              const SizedBox(height: 14),
-              _field(
-                controller: _organizerController,
-                label: 'Organizer Name',
-                validator: _required,
-              ),
-              const SizedBox(height: 14),
-              _field(
-                controller: _emailController,
-                label: 'Organizer Email',
-                keyboardType: TextInputType.emailAddress,
-                validator: (value) {
-                  final requiredError = _required(value);
-                  if (requiredError != null) return requiredError;
-                  final email = value!.trim();
-                  return RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email)
-                      ? null
-                      : 'Enter a valid email address.';
-                },
-              ),
-              const SizedBox(height: 14),
-              _field(
-                controller: _locationController,
-                label: 'City / Location',
-                validator: _required,
-              ),
-              const SizedBox(height: 24),
-              SizedBox(
-                height: 54,
-                child: ElevatedButton(
-                  onPressed: _isSaving ? null : _create,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: textColor,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
+                const SizedBox(height: 8),
+                const Text(
+                  'Your conference and provider selections will be saved together.',
+                  style: TextStyle(color: textColor, height: 1.4),
+                ),
+                const SizedBox(height: 24),
+                _field(
+                  controller: _titleController,
+                  label: 'Conference Title',
+                  validator: _required,
+                ),
+                const SizedBox(height: 14),
+                _field(
+                  controller: _sloganController,
+                  label: 'Moto',
+                  validator: _required,
+                ),
+                const SizedBox(height: 14),
+                InkWell(
+                  onTap: _isSaving || _isEditing ? null : _selectDate,
+                  borderRadius: BorderRadius.circular(14),
+                  child: InputDecorator(
+                    decoration: const InputDecoration(
+                      labelText: 'Event Date',
+                      labelStyle: TextStyle(color: textColor),
+                      floatingLabelStyle: TextStyle(color: textColor),
+                      prefixIcon: Icon(
+                        Icons.calendar_today_outlined,
+                        color: textColor,
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(14)),
+                      ),
+                    ),
+                    child: Text(
+                      _eventDate == null
+                          ? 'Choose a date'
+                          : MaterialLocalizations.of(
+                              context,
+                            ).formatMediumDate(_eventDate!),
+                      style: const TextStyle(color: textColor),
                     ),
                   ),
-                  child: _isSaving
-                      ? const SizedBox.square(
-                          dimension: 21,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : const Text('Continue'),
                 ),
-              ),
-            ],
+                if (_isEditing) ...[
+                  const SizedBox(height: 5),
+                  const Text(
+                    'Change the event date from the conference summary.',
+                    style: TextStyle(color: textColor, fontSize: 12),
+                  ),
+                ],
+                const SizedBox(height: 14),
+                _field(
+                  controller: _organizerController,
+                  label: 'Organizer Name',
+                  validator: _required,
+                ),
+                const SizedBox(height: 14),
+                _field(
+                  controller: _emailController,
+                  label: 'Organizer Email',
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (value) {
+                    final requiredError = _required(value);
+                    if (requiredError != null) return requiredError;
+                    final email = value!.trim();
+                    return RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email)
+                        ? null
+                        : 'Enter a valid email address.';
+                  },
+                ),
+                const SizedBox(height: 14),
+                _field(
+                  controller: _locationController,
+                  label: 'City / Location',
+                  validator: _required,
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  height: 54,
+                  child: ElevatedButton(
+                    onPressed: _isSaving ? null : _create,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFE9DED5),
+                      foregroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: _isSaving
+                        ? const SizedBox.square(
+                            dimension: 21,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.black,
+                            ),
+                          )
+                        : Text(_isEditing ? 'Save changes' : 'Continue'),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -232,11 +301,11 @@ class _ConferenceCreateScreenState extends State<ConferenceCreateScreen> {
       keyboardType: keyboardType,
       textCapitalization: TextCapitalization.sentences,
       validator: validator,
-      style: const TextStyle(color: Color(0xFF3E2C26)),
+      style: const TextStyle(color: Colors.black),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: const TextStyle(color: Color(0xFF6E5B54)),
-        floatingLabelStyle: const TextStyle(color: Color(0xFF3E2C26)),
+        labelStyle: const TextStyle(color: Colors.black),
+        floatingLabelStyle: const TextStyle(color: Colors.black),
         filled: true,
         fillColor: Colors.white,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),

@@ -3,13 +3,19 @@ import 'package:flutter/material.dart';
 import '../../models/conference/conference_event.dart';
 import '../../models/conference/conference_service_booking.dart';
 import '../../services/conference_repository.dart';
+import 'conference_create_screen.dart';
 import 'conference_invitation_screen.dart';
 import 'conference_wizard_screen.dart';
 
 class ConferenceSummaryScreen extends StatefulWidget {
-  const ConferenceSummaryScreen({super.key, required this.conference});
+  const ConferenceSummaryScreen({
+    super.key,
+    required this.conference,
+    this.showProfileHint = false,
+  });
 
   final ConferenceEvent conference;
+  final bool showProfileHint;
 
   @override
   State<ConferenceSummaryScreen> createState() =>
@@ -25,6 +31,19 @@ class _ConferenceSummaryScreenState extends State<ConferenceSummaryScreen> {
     super.initState();
     _conference = widget.conference;
     _reload();
+    if (widget.showProfileHint) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Review or update conference services in Profile > My Events > Conference.',
+            ),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      });
+    }
   }
 
   void _reload() {
@@ -44,19 +63,84 @@ class _ConferenceSummaryScreenState extends State<ConferenceSummaryScreen> {
     if (mounted) setState(_reload);
   }
 
+  Future<void> _editConferenceDetails() async {
+    final updated = await Navigator.of(context).push<ConferenceEvent>(
+      MaterialPageRoute<ConferenceEvent>(
+        builder: (_) => ConferenceCreateScreen(conference: _conference),
+      ),
+    );
+    if (updated == null || !mounted) return;
+    setState(() {
+      _conference = updated;
+      _reload();
+    });
+    _showMessage('Conference details updated.');
+  }
+
+  Future<void> _deleteConference() async {
+    final shouldDelete = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: const Text(
+          'Delete this conference?',
+          style: TextStyle(color: Colors.black),
+        ),
+        content: const Text(
+          'This also removes its saved provider selections and cannot be undone.',
+          style: TextStyle(color: Colors.black),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            style: TextButton.styleFrom(foregroundColor: Colors.black),
+            child: const Text('Keep conference'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: FilledButton.styleFrom(
+              backgroundColor: Color(0xFFE9DED5),
+              foregroundColor: Colors.black,
+            ),
+            child: const Text('Delete conference'),
+          ),
+        ],
+      ),
+    );
+    if (shouldDelete != true) return;
+    try {
+      await ConferenceRepository.deleteConference(_conference);
+      if (mounted) Navigator.of(context).pop(true);
+    } catch (error) {
+      if (mounted) _showMessage('Could not delete conference: $error');
+    }
+  }
+
   Future<void> _cancel(ConferenceServiceBooking booking) async {
     final shouldCancel = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Cancel this service?'),
-        content: Text('Cancel ${booking.providerName} from the conference?'),
+        backgroundColor: Colors.white,
+        title: const Text(
+          'Cancel this service?',
+          style: TextStyle(color: Colors.black),
+        ),
+        content: Text(
+          'Cancel ${booking.providerName} from the conference?',
+          style: const TextStyle(color: Colors.black),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
+            style: TextButton.styleFrom(foregroundColor: Colors.black),
             child: const Text('Keep booking'),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
+            style: FilledButton.styleFrom(
+              backgroundColor: Color(0xFFE9DED5),
+              foregroundColor: Colors.black,
+            ),
             child: const Text('Cancel booking'),
           ),
         ],
@@ -83,6 +167,21 @@ class _ConferenceSummaryScreenState extends State<ConferenceSummaryScreen> {
           : _conference.eventDate,
       firstDate: today,
       lastDate: DateTime(today.year + 5),
+      builder: (context, child) => Theme(
+        data: Theme.of(context).copyWith(
+          colorScheme: const ColorScheme.light(
+            primary: Color(0xFFE9DED5),
+            onPrimary: Colors.black,
+            surface: Colors.white,
+            onSurface: Colors.black,
+          ),
+          textTheme: Theme.of(context).textTheme.apply(
+            bodyColor: Colors.black,
+            displayColor: Colors.black,
+          ),
+        ),
+        child: child!,
+      ),
     );
     if (selected == null) return;
     try {
@@ -103,150 +202,200 @@ class _ConferenceSummaryScreenState extends State<ConferenceSummaryScreen> {
 
   void _showMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), behavior: SnackBarBehavior.floating),
+      SnackBar(
+        content: Text(message, style: const TextStyle(color: Colors.black)),
+        backgroundColor: const Color(0xFFE9DED5),
+        behavior: SnackBarBehavior.floating,
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    const text = Color(0xFF3E2C26);
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8F1EA),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF8F1EA),
-        foregroundColor: text,
-        elevation: 0,
-        title: const Text('Conference summary'),
-        actions: [
-          IconButton(
-            tooltip: 'Make invitation',
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) =>
-                    ConferenceInvitationScreen(conference: _conference),
-              ),
-            ),
-            icon: const Icon(Icons.mail_outline_rounded),
+    const text = Colors.black;
+    final theme = Theme.of(context);
+    return Theme(
+      data: theme.copyWith(
+        brightness: Brightness.light,
+        colorScheme: const ColorScheme.light(
+          primary: Color(0xFFE9DED5),
+          onPrimary: Colors.black,
+          surface: Colors.white,
+          onSurface: Colors.black,
+        ),
+        textTheme: theme.textTheme.apply(
+          bodyColor: Colors.black,
+          displayColor: Colors.black,
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFFF8F1EA),
+          foregroundColor: Colors.black,
+          titleTextStyle: TextStyle(color: Colors.black, fontSize: 20),
+        ),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(foregroundColor: Colors.black),
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(foregroundColor: Colors.black),
+        ),
+        filledButtonTheme: FilledButtonThemeData(
+          style: FilledButton.styleFrom(
+            backgroundColor: const Color(0xFFE9DED5),
+            foregroundColor: Colors.black,
           ),
-        ],
+        ),
       ),
-      body: FutureBuilder<List<ConferenceServiceBooking>>(
-        future: _bookingsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text('Could not load conference bookings.'),
-                    const SizedBox(height: 8),
-                    Text(
-                      '${snapshot.error}',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Color(0xFF8A7A75),
-                        fontSize: 12,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    OutlinedButton(
-                      onPressed: () => setState(_reload),
-                      child: const Text('Retry'),
-                    ),
-                  ],
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF8F1EA),
+        appBar: AppBar(
+          backgroundColor: const Color(0xFFF8F1EA),
+          foregroundColor: text,
+          elevation: 0,
+          title: const Text(
+            'Conference summary',
+            style: TextStyle(color: text),
+          ),
+          actions: [
+            IconButton(
+              tooltip: 'Edit conference details',
+              onPressed: _editConferenceDetails,
+              icon: const Icon(Icons.edit_outlined),
+            ),
+            IconButton(
+              tooltip: 'Delete conference',
+              onPressed: _deleteConference,
+              icon: const Icon(Icons.delete_outline_rounded),
+            ),
+            IconButton(
+              tooltip: 'Make invitation',
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) =>
+                      ConferenceInvitationScreen(conference: _conference),
                 ),
               ),
+              icon: const Icon(Icons.mail_outline_rounded),
+            ),
+          ],
+        ),
+        body: FutureBuilder<List<ConferenceServiceBooking>>(
+          future: _bookingsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        'Could not load conference bookings.',
+                        style: TextStyle(color: text),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        '${snapshot.error}',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(color: text, fontSize: 12),
+                      ),
+                      const SizedBox(height: 12),
+                      OutlinedButton(
+                        onPressed: () => setState(_reload),
+                        child: const Text('Retry'),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+            final bookings = snapshot.data ?? [];
+            final total = bookings.fold<num>(
+              0,
+              (sum, booking) => sum + booking.totalPrice,
             );
-          }
-          final bookings = snapshot.data ?? [];
-          final total = bookings.fold<num>(
-            0,
-            (sum, booking) => sum + booking.totalPrice,
-          );
-          return ListView(
-            padding: const EdgeInsets.fromLTRB(18, 12, 18, 28),
-            children: [
-              _conferenceInfo(),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  const Expanded(
-                    child: Text(
-                      'Selected services',
-                      style: TextStyle(
-                        color: text,
-                        fontSize: 19,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pushReplacement(
-                      MaterialPageRoute<void>(
-                        builder: (_) =>
-                            ConferenceWizardScreen(conference: _conference),
-                      ),
-                    ),
-                    child: const Text('Continue planning'),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              for (
-                var index = 0;
-                index < ConferenceServiceCategory.steps.length;
-                index++
-              )
-                _serviceRow(
-                  index,
-                  ConferenceServiceCategory.steps[index],
-                  _bookingForCategory(
-                    bookings,
-                    ConferenceServiceCategory.steps[index].key,
-                  ),
-                ),
-              const SizedBox(height: 14),
-              Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF3E2C26),
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                child: Row(
+            return ListView(
+              padding: const EdgeInsets.fromLTRB(18, 12, 18, 28),
+              children: [
+                _conferenceInfo(),
+                const SizedBox(height: 20),
+                Row(
                   children: [
                     const Expanded(
                       child: Text(
-                        'Estimated grand total',
-                        style: TextStyle(color: Colors.white70),
+                        'Selected services',
+                        style: TextStyle(
+                          color: text,
+                          fontSize: 19,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
-                    Text(
-                      '৳${total.toStringAsFixed(0)}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pushReplacement(
+                        MaterialPageRoute<void>(
+                          builder: (_) =>
+                              ConferenceWizardScreen(conference: _conference),
+                        ),
                       ),
+                      child: const Text('Continue planning'),
                     ),
                   ],
                 ),
-              ),
-              if (_conference.isLocalOnly) ...[
-                const SizedBox(height: 12),
-                const Text(
-                  'Guest event and service selections are saved on this device only. '
-                  'They are estimates, not provider-confirmed bookings, and are not synced to Supabase.',
-                  style: TextStyle(color: Color(0xFF8A7A75), fontSize: 12),
+                const SizedBox(height: 8),
+                for (
+                  var index = 0;
+                  index < ConferenceServiceCategory.steps.length;
+                  index++
+                )
+                  _serviceRow(
+                    index,
+                    ConferenceServiceCategory.steps[index],
+                    _bookingForCategory(
+                      bookings,
+                      ConferenceServiceCategory.steps[index].key,
+                    ),
+                  ),
+                const SizedBox(height: 14),
+                Container(
+                  padding: const EdgeInsets.all(18),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE9DED5),
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  child: Row(
+                    children: [
+                      const Expanded(
+                        child: Text(
+                          'Estimated grand total',
+                          style: TextStyle(color: text),
+                        ),
+                      ),
+                      Text(
+                        '৳${total.toStringAsFixed(0)}',
+                        style: const TextStyle(
+                          color: text,
+                          fontSize: 22,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
+                if (_conference.isLocalOnly) ...[
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Guest event and service selections are saved on this device only. '
+                    'They are estimates, not provider-confirmed bookings, and are not synced to Supabase.',
+                    style: TextStyle(color: text, fontSize: 12),
+                  ),
+                ],
               ],
-            ],
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
@@ -266,17 +415,14 @@ class _ConferenceSummaryScreenState extends State<ConferenceSummaryScreen> {
           Text(
             event.title,
             style: const TextStyle(
-              color: Color(0xFF3E2C26),
+              color: Colors.black,
               fontSize: 22,
               fontWeight: FontWeight.w700,
             ),
           ),
           if (event.slogan.isNotEmpty) ...[
             const SizedBox(height: 4),
-            Text(
-              event.slogan,
-              style: const TextStyle(color: Color(0xFF8A7A75)),
-            ),
+            Text(event.slogan, style: const TextStyle(color: Colors.black)),
           ],
           const Divider(height: 26),
           _infoLine('Date', _date(event.eventDate)),
@@ -304,13 +450,13 @@ class _ConferenceSummaryScreenState extends State<ConferenceSummaryScreen> {
       children: [
         SizedBox(
           width: 112,
-          child: Text(label, style: const TextStyle(color: Color(0xFF8A7A75))),
+          child: Text(label, style: const TextStyle(color: Colors.black)),
         ),
         Expanded(
           child: Text(
             value,
             style: const TextStyle(
-              color: Color(0xFF3E2C26),
+              color: Colors.black,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -343,7 +489,7 @@ class _ConferenceSummaryScreenState extends State<ConferenceSummaryScreen> {
                   Text(
                     category.label,
                     style: const TextStyle(
-                      color: Color(0xFF3E2C26),
+                      color: Colors.black,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -352,10 +498,7 @@ class _ConferenceSummaryScreenState extends State<ConferenceSummaryScreen> {
                     booking == null
                         ? 'Not selected'
                         : '${booking.providerName} · ${booking.packageName}',
-                    style: const TextStyle(
-                      color: Color(0xFF8A7A75),
-                      fontSize: 12,
-                    ),
+                    style: const TextStyle(color: Colors.black, fontSize: 12),
                   ),
                   if (booking != null) ...[
                     if (_selectionDescription(booking).isNotEmpty) ...[
@@ -365,7 +508,7 @@ class _ConferenceSummaryScreenState extends State<ConferenceSummaryScreen> {
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                          color: Color(0xFF6D625E),
+                          color: Colors.black,
                           fontSize: 11,
                         ),
                       ),
@@ -374,7 +517,7 @@ class _ConferenceSummaryScreenState extends State<ConferenceSummaryScreen> {
                     Text(
                       '৳${booking.totalPrice.toStringAsFixed(0)} · ${booking.status}',
                       style: const TextStyle(
-                        color: Color(0xFF3E2C26),
+                        color: Colors.black,
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                       ),

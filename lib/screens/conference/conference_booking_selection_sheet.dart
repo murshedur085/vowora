@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../../data/conference/conference_seed_data.dart';
 import '../../models/conference/conference_provider.dart';
 import '../../services/conference_repository.dart';
+import '../../widgets/conference_hall_availability_section.dart';
+import '../../widgets/conference_provider_image.dart';
 
 class ConferenceBookingDraft {
   const ConferenceBookingDraft({
@@ -82,7 +84,9 @@ class _ConferenceBookingSelectionSheetState
     };
     _selectedPackage =
         widget.previousDetails['package'] as String? ??
-        (_packages.isEmpty
+        (_isTransportation
+            ? 'Custom vehicle selection'
+            : _packages.isEmpty
             ? 'Custom package'
             : _packages.first['name'] as String);
     _participants = widget.previousDetails['participants'] as int? ?? 20;
@@ -172,6 +176,15 @@ class _ConferenceBookingSelectionSheetState
       });
     } else if (_isTransportation) {
       details.addAll({
+        'package': _selectedPackage,
+        'package_details': _selectedPackage == 'Custom vehicle selection'
+            ? 'Individual vehicle selection'
+            : _transportPackageSummary(
+                _packages.firstWhere(
+                  (item) => item['name'] == _selectedPackage,
+                  orElse: () => const <String, dynamic>{},
+                ),
+              ),
         'rental_days': _rentalDays,
         'vehicle_quantities': _vehicleQuantities,
         'vehicles': _selectedVehicles,
@@ -196,7 +209,7 @@ class _ConferenceBookingSelectionSheetState
         packageName: _isFood
             ? 'Custom food order'
             : _isTransportation
-            ? 'Vehicle rental'
+            ? _selectedPackage
             : _selectedPackage,
         totalPrice: _totalPrice,
         details: details,
@@ -394,15 +407,54 @@ class _ConferenceBookingSelectionSheetState
 
   Widget _buildProviderInformation() {
     final details = widget.provider.details;
+    final isHall = widget.provider.category == 'hall';
     final facilities = details['facilities'];
     final policies = details['policies'];
+    final otherFacilities = facilities is List
+        ? facilities
+              .where(
+                (facility) =>
+                    !isHall ||
+                    !const [
+                      'AC',
+                      'WiFi',
+                      'Parking',
+                    ].contains(facility.toString()),
+              )
+              .toList()
+        : const <dynamic>[];
+    final phone =
+        (details['contact_phone'] ?? details['phone'] ?? details['call_number'])
+            ?.toString()
+            .trim() ??
+        '';
+    final isSampleContact = details['contact_is_sample'] == true;
     final contacts = [
-      details['contact_phone'] ?? details['phone'],
       details['contact_email'] ?? details['email'],
       details['website'],
-    ].whereType<String>().where((value) => value.isNotEmpty).toList();
+    ]
+        .whereType<String>()
+        .map((value) => value.trim())
+        .where((value) => value.isNotEmpty)
+        .toList();
+    final rawSocialLinks = details['social_links'] ?? details['social_media'];
+    final socialLinks = <String>{
+      if (rawSocialLinks is String && rawSocialLinks.trim().isNotEmpty)
+        rawSocialLinks.trim(),
+      if (rawSocialLinks is List)
+        ...rawSocialLinks
+            .whereType<String>()
+            .map((value) => value.trim())
+            .where((value) => value.isNotEmpty),
+      for (final platform in ['facebook', 'instagram', 'tiktok', 'youtube'])
+        if (details[platform] is String &&
+            (details[platform] as String).trim().isNotEmpty)
+          (details[platform] as String).trim(),
+    };
     final facts = <String>[
       if (details['capacity'] != null) 'Capacity: ${details['capacity']}',
+      if (details['minimum_guests'] != null)
+        'Minimum guests: ${details['minimum_guests']}',
       if (details['parking_capacity'] != null)
         'Parking: ${details['parking_capacity']}',
       if (details['staff_count'] != null) 'Staff: ${details['staff_count']}',
@@ -412,22 +464,43 @@ class _ConferenceBookingSelectionSheetState
       if (details['fuel_policy'] != null) 'Fuel: ${details['fuel_policy']}',
       if (details['driver_information'] != null)
         'Driver: ${details['driver_information']}',
-      if (details['ac'] != null) 'AC: ${details['ac'] == true ? 'Yes' : 'No'}',
-      if (details['wifi'] != null)
+      if (!isHall && details['ac'] != null)
+        'AC: ${details['ac'] == true ? 'Yes' : 'No'}',
+      if (!isHall && details['wifi'] != null)
         'Wi-Fi: ${details['wifi'] == true ? 'Yes' : 'No'}',
       if (details['cctv'] != null)
         'CCTV: ${details['cctv'] == true ? 'Yes' : 'No'}',
-      if (policies is Map && policies['outside_food'] != null)
+      if (!isHall && policies is Map && policies['outside_food'] != null)
         'Outside food: ${policies['outside_food'] == true ? 'Allowed' : 'Not allowed'}',
-      if (policies is Map && policies['outside_decoration'] != null)
+      if (!isHall && policies is Map && policies['outside_decoration'] != null)
         'Outside decoration: ${policies['outside_decoration'] == true ? 'Allowed' : 'Not allowed'}',
-      if (policies is Map && policies['outside_sound'] != null)
+      if (!isHall && policies is Map && policies['outside_sound'] != null)
         'Outside sound: ${policies['outside_sound'] == true ? 'Allowed' : 'Not allowed'}',
     ];
     final gallery = details['gallery'] ?? details['gallery_images'];
+    final imagePlaceholder = switch (widget.provider.category) {
+      'hall' => Icons.business_rounded,
+      'food' => Icons.restaurant_rounded,
+      'sound' => Icons.graphic_eq_rounded,
+      'decoration' => Icons.auto_awesome_rounded,
+      'photography' => Icons.photo_camera_outlined,
+      'transportation' => Icons.airport_shuttle_outlined,
+      _ => Icons.business_center_outlined,
+    };
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: AspectRatio(
+            aspectRatio: 16 / 9,
+            child: ConferenceProviderImage(
+              imageUrl: widget.provider.imageUrl,
+              placeholderIcon: imagePlaceholder,
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
         if (widget.provider.address.isNotEmpty)
           _providerLine(Icons.location_on_outlined, widget.provider.address),
         if (widget.provider.description.isNotEmpty) ...[
@@ -441,12 +514,25 @@ class _ConferenceBookingSelectionSheetState
             ),
           ),
         ],
-        if (facilities is List && facilities.isNotEmpty) ...[
+        if (isHall) ...[
+          const SizedBox(height: 14),
+          ConferenceHallAvailabilitySection(details: details),
+        ],
+        if (otherFacilities.isNotEmpty) ...[
           const SizedBox(height: 10),
+          const Text(
+            'Other amenities',
+            style: TextStyle(
+              color: Color(0xFF3E2C26),
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 4),
           Wrap(
             spacing: 6,
             runSpacing: 6,
-            children: facilities
+            children: otherFacilities
                 .map(
                   (facility) => Chip(
                     label: Text(facility.toString()),
@@ -472,9 +558,25 @@ class _ConferenceBookingSelectionSheetState
               ),
             ),
         ],
+        const SizedBox(height: 10),
+        _providerLine(
+          Icons.call_outlined,
+          phone.isEmpty
+              ? 'Phone number not provided'
+              : isSampleContact
+              ? 'Sample phone (not real): $phone'
+              : 'Call: $phone',
+        ),
+        const SizedBox(height: 6),
+        _providerLine(
+          Icons.share_outlined,
+          socialLinks.isEmpty
+              ? 'Social media links not provided'
+              : '${isSampleContact ? 'Sample social link: ' : 'Social media: '}${socialLinks.join(' · ')}',
+        ),
         if (contacts.isNotEmpty) ...[
-          const SizedBox(height: 10),
-          _providerLine(Icons.call_outlined, contacts.join(' · ')),
+          const SizedBox(height: 6),
+          _providerLine(Icons.info_outline, contacts.join(' · ')),
         ],
         if (gallery is List && gallery.isNotEmpty) ...[
           const SizedBox(height: 12),
@@ -558,6 +660,17 @@ class _ConferenceBookingSelectionSheetState
               ChoiceChip(
                 label: Text(meal[0].toUpperCase() + meal.substring(1)),
                 selected: _selectedMeal == meal,
+                selectedColor: const Color(0xFFE8BF52),
+                backgroundColor: const Color(0xFFF0E6DD),
+                labelStyle: const TextStyle(
+                  color: Color(0xFF3E2C26),
+                  fontWeight: FontWeight.w600,
+                ),
+                side: BorderSide(
+                  color: _selectedMeal == meal
+                      ? const Color(0xFFB88A68)
+                      : const Color(0xFFE9DED5),
+                ),
                 onSelected: (_) => setState(() => _selectedMeal = meal),
               ),
           ],
@@ -568,17 +681,11 @@ class _ConferenceBookingSelectionSheetState
             contentPadding: EdgeInsets.zero,
             leading: ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                item['image_url'] as String,
+              child: ConferenceProviderImage(
+                imageUrl: item['image_url'] as String?,
                 width: 46,
                 height: 46,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  width: 46,
-                  height: 46,
-                  color: const Color(0xFFF0E6DD),
-                  child: const Icon(Icons.restaurant_outlined, size: 20),
-                ),
+                placeholderIcon: Icons.restaurant_outlined,
               ),
             ),
             title: Text(item['name'] as String),
@@ -593,7 +700,7 @@ class _ConferenceBookingSelectionSheetState
         if (items.isEmpty)
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 20),
-            child: Text('No demo items are listed for this meal.'),
+            child: Text('No menu items are listed for this meal.'),
           ),
         const SizedBox(height: 12),
         TextField(
@@ -618,6 +725,7 @@ class _ConferenceBookingSelectionSheetState
   Widget _buildTransportSelection() {
     return Column(
       children: [
+        if (_packages.isNotEmpty) _buildTransportPackages(),
         Row(
           children: [
             const Expanded(child: Text('Rental duration')),
@@ -644,9 +752,10 @@ class _ConferenceBookingSelectionSheetState
             ),
             trailing: _quantityControl(
               _vehicleQuantities[_vehicleId(vehicle)] ?? 0,
-              onChanged: (quantity) => setState(
-                () => _vehicleQuantities[_vehicleId(vehicle)] = quantity,
-              ),
+              onChanged: (quantity) => setState(() {
+                _vehicleQuantities[_vehicleId(vehicle)] = quantity;
+                _selectedPackage = 'Custom vehicle selection';
+              }),
             ),
           ),
         if (_vehicles.isEmpty)
@@ -672,6 +781,95 @@ class _ConferenceBookingSelectionSheetState
         ),
       ],
     );
+  }
+
+  Widget _buildTransportPackages() {
+    Map<String, dynamic>? selected;
+    for (final item in _packages) {
+      if (item['name'] == _selectedPackage) {
+        selected = item;
+        break;
+      }
+    }
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              'Vehicle packages (optional)',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 4,
+            children: _packages.map((item) {
+              final name = item['name'] as String? ?? 'Package';
+              final isSelected = _selectedPackage == name;
+              return ChoiceChip(
+                label: Text(name),
+                selected: isSelected,
+                selectedColor: const Color(0xFFE8BF52),
+                backgroundColor: const Color(0xFFF0E6DD),
+                labelStyle: const TextStyle(
+                  color: Color(0xFF3E2C26),
+                  fontWeight: FontWeight.w600,
+                ),
+                onSelected: (chosen) {
+                  if (!chosen) return;
+                  final quantities = item['vehicle_quantities'];
+                  setState(() {
+                    _selectedPackage = name;
+                    for (final vehicle in _vehicles) {
+                      final quantity = quantities is Map
+                          ? quantities[_vehicleId(vehicle)]
+                          : null;
+                      _vehicleQuantities[_vehicleId(vehicle)] =
+                          quantity is num ? quantity.toInt() : 0;
+                    }
+                  });
+                },
+              );
+            }).toList(),
+          ),
+          if (selected != null) ...[
+            const SizedBox(height: 4),
+            Text(
+              _transportPackageSummary(selected),
+              style: const TextStyle(
+                color: Color(0xFF6D625E),
+                fontSize: 12,
+              ),
+            ),
+          ],
+          const SizedBox(height: 4),
+          const Text(
+            'You can also select or adjust individual vehicles below.',
+            style: TextStyle(color: Color(0xFF8A7A75), fontSize: 11),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _transportPackageSummary(Map<String, dynamic> package) {
+    final quantities = package['vehicle_quantities'];
+    if (quantities is! Map) return 'Select vehicles individually';
+    final included = _vehicles
+        .where((vehicle) {
+          final count = quantities[_vehicleId(vehicle)];
+          return count is num && count > 0;
+        })
+        .map(
+          (vehicle) =>
+              '${quantities[_vehicleId(vehicle)]} × ${vehicle['name']}',
+        )
+        .toList();
+    return included.isEmpty ? 'No vehicles included' : included.join(' · ');
   }
 
   Widget _quantityControl(int value, {required ValueChanged<int> onChanged}) {

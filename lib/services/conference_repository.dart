@@ -102,6 +102,87 @@ class ConferenceRepository {
     return _readEvents(prefs.getString(_eventsKey));
   }
 
+  static Future<ConferenceEvent> updateConferenceDetails({
+    required ConferenceEvent event,
+    required String title,
+    required String slogan,
+    required String organizerName,
+    required String organizerEmail,
+    required String location,
+  }) async {
+    final values = {
+      'title': title.trim(),
+      'slogan': slogan.trim(),
+      'organizer_name': organizerName.trim(),
+      'organizer_email': organizerEmail.trim(),
+      'location': location.trim(),
+    };
+    if (event.isLocalOnly) {
+      final prefs = await SharedPreferences.getInstance();
+      final events = _readEvents(prefs.getString(_eventsKey));
+      final eventIndex = events.indexWhere((item) => item.id == event.id);
+      if (eventIndex < 0) {
+        throw StateError('The conference could not be found on this device.');
+      }
+      final updatedEvent = event.copyWith(
+        title: values['title'],
+        slogan: values['slogan'],
+        organizerName: values['organizer_name'],
+        organizerEmail: values['organizer_email'],
+        location: values['location'],
+      );
+      events[eventIndex] = updatedEvent;
+      await prefs.setString(
+        _eventsKey,
+        jsonEncode(events.map((item) => item.toLocalMap()).toList()),
+      );
+      return updatedEvent;
+    }
+
+    final response = await SupabaseService.client
+        .from('conference_events')
+        .update({
+          ...values,
+          'updated_at': DateTime.now().toUtc().toIso8601String(),
+        })
+        .eq('id', event.id)
+        .select()
+        .single();
+    return ConferenceEvent.fromMap(Map<String, dynamic>.from(response));
+  }
+
+  static Future<void> deleteConference(ConferenceEvent event) async {
+    if (!event.isLocalOnly) {
+      await SupabaseService.client
+          .from('conference_events')
+          .delete()
+          .eq('id', event.id)
+          .select()
+          .single();
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    final events = _readEvents(prefs.getString(_eventsKey));
+    final eventCount = events.length;
+    events.removeWhere((item) => item.id == event.id);
+    if (event.isLocalOnly && events.length == eventCount) {
+      throw StateError('The conference could not be found on this device.');
+    }
+    final bookings = _readBookings(prefs.getString(_bookingsKey))
+      ..removeWhere((item) => item.conferenceId == event.id);
+    final invitations = _readJsonList(prefs.getString(_invitationsKey))
+      ..removeWhere((item) => item['conference_id'] == event.id);
+    await prefs.setString(
+      _eventsKey,
+      jsonEncode(events.map((item) => item.toLocalMap()).toList()),
+    );
+    await prefs.setString(
+      _bookingsKey,
+      jsonEncode(bookings.map((item) => item.toLocalMap()).toList()),
+    );
+    await prefs.setString(_invitationsKey, jsonEncode(invitations));
+  }
+
   static Future<ConferenceEvent> updateConferenceDate(
     ConferenceEvent event,
     DateTime eventDate,
@@ -392,6 +473,14 @@ class ConferenceRepository {
     String category,
   ) {
     final packages = record['packages'] ?? record['packs'];
+    const descriptions = {
+      'hall': 'Review venue facilities and available time packages.',
+      'food': 'Explore the restaurant menu and select meals for your event.',
+      'sound': 'Compare sound and screen packages for your event.',
+      'decoration': 'Explore decoration options for your event.',
+      'photography': 'Compare event photography coverage options.',
+      'transportation': 'Choose vehicles and rental options for your event.',
+    };
     num startingPrice =
         (record['starting_price'] ?? record['price'] ?? 0) as num;
     if (startingPrice == 0 && packages is List && packages.isNotEmpty) {
@@ -400,34 +489,30 @@ class ConferenceRepository {
         startingPrice = first['price'] as num;
       }
     }
-    const images = {
-      'hall':
-          'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1200&q=80',
-      'food':
-          'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=1200&q=80',
-      'sound':
-          'https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=1200&q=80',
-      'decoration':
-          'https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1200&q=80',
-      'photography':
-          'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1200&q=80',
-      'transportation':
-          'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=1200&q=80',
-    };
+    if (startingPrice == 0 && category == 'transportation') {
+      final vehicles = record['vehicles'];
+      if (vehicles is List) {
+        for (final vehicle in vehicles.whereType<Map>()) {
+          final price = vehicle['price_per_day'];
+          if (price is num && (startingPrice == 0 || price < startingPrice)) {
+            startingPrice = price;
+          }
+        }
+      }
+    }
     final city = (record['city'] ?? record['location'] ?? 'Dhaka') as String;
     return ConferenceProvider(
       id: record['id'] as String,
-      name: (record['name'] ?? 'Demo provider') as String,
+      name: (record['name'] ?? 'Service provider') as String,
       category: category,
       city: city,
       address: (record['address'] ?? city) as String,
       description:
           (record['description'] ??
-                  'Demo listing. Provider details and contact information are not verified.')
+                  descriptions[category] ??
+                  'View available services and packages.')
               as String,
-      imageUrl:
-          (record['image_url'] ?? record['image'] ?? images[category]!)
-              as String,
+      imageUrl: (record['image_url'] ?? record['image'] ?? '') as String,
       startingPrice: startingPrice,
       details: record,
       isDemo: true,

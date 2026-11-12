@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../data/conference/conference_seed_data.dart';
+import '../../widgets/conference_provider_image.dart';
 import 'c_others/booking_bottom_sheet.dart';
 
 class ConferenceTransportPage extends StatelessWidget {
@@ -28,7 +29,15 @@ class ConferenceTransportPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ClipRRect(borderRadius: const BorderRadius.vertical(top: Radius.circular(20)), child: Image.network(transport['image'], height: 160, width: double.infinity, fit: BoxFit.cover)),
+                      ClipRRect(
+                        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                        child: ConferenceProviderImage(
+                          imageUrl: transport['image'] as String?,
+                          height: 160,
+                          width: double.infinity,
+                          placeholderIcon: Icons.directions_car_outlined,
+                        ),
+                      ),
                       Padding(padding: const EdgeInsets.all(16.0), child: Text(transport['name'], style: GoogleFonts.playfairDisplay(color: const Color(0xFF3E2C26), fontSize: 18, fontWeight: FontWeight.bold))),
                     ],
                   ),
@@ -57,7 +66,12 @@ class TransportDetailsScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Image.network(transport['image'], height: 250, width: double.infinity, fit: BoxFit.cover),
+            ConferenceProviderImage(
+              imageUrl: transport['image'] as String?,
+              height: 250,
+              width: double.infinity,
+              placeholderIcon: Icons.directions_car_outlined,
+            ),
             Padding(
               padding: const EdgeInsets.all(24.0),
               child: Column(

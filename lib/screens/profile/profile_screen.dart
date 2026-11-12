@@ -614,6 +614,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 10),
 
                   _settingMenuTile(
+                    icon: Icons.event_note_rounded,
+                    title: 'My Events',
+                    subtitle: 'Review recent conferences and provider selections',
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute<void>(
+                        builder: (_) => const ConferenceEventsScreen(),
+                      ),
+                    ),
+                  ),
+                  _settingMenuTile(
                     icon: Icons.storefront_rounded,
                     title: 'Vendor Marketplace & Bookings',
                     subtitle: 'Browse photographers, caterers & decorators',

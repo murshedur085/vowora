@@ -81,7 +81,7 @@ class MyEventsSection extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute<void>(
-                          builder: (_) => const _ConferenceCategoriesScreen(),
+                          builder: (_) => const ConferenceEventsScreen(),
                         ),
                       );
                     } else {
@@ -160,26 +160,6 @@ class _EventCategoryTile extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _ConferenceCategoriesScreen extends StatelessWidget {
-  const _ConferenceCategoriesScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: VoworaColors.darkBackground,
-      appBar: AppBar(
-        title: const Text('Conference Bookings'),
-        backgroundColor: VoworaColors.darkBackground,
-        foregroundColor: Colors.white,
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: const [ConferenceEventsSection()],
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../data/conference/conference_seed_data.dart';
+import '../../widgets/conference_provider_image.dart';
 import 'c_others/booking_bottom_sheet.dart';
 
 class ConferenceDecorationPage extends StatelessWidget {
@@ -53,11 +54,11 @@ class ConferenceDecorationPage extends StatelessWidget {
                         borderRadius: const BorderRadius.vertical(
                           top: Radius.circular(20),
                         ),
-                        child: Image.network(
-                          decor['image'],
+                        child: ConferenceProviderImage(
+                          imageUrl: decor['image'] as String?,
                           height: 160,
                           width: double.infinity,
-                          fit: BoxFit.cover,
+                          placeholderIcon: Icons.local_florist_outlined,
                         ),
                       ),
                       Padding(
@@ -102,11 +103,11 @@ class DecorationDetailsScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Image.network(
-              decor['image'],
+            ConferenceProviderImage(
+              imageUrl: decor['image'] as String?,
               height: 250,
               width: double.infinity,
-              fit: BoxFit.cover,
+              placeholderIcon: Icons.local_florist_outlined,
             ),
             Padding(
               padding: const EdgeInsets.all(24.0),

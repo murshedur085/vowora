@@ -1,7 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../data/conference/conference_seed_data.dart';
+import '../../widgets/conference_hall_availability_section.dart';
 import '../conference/c_others/booking_bottom_sheet.dart';
+
+Widget _hallImage(
+  Map<String, dynamic> hall, {
+  required double width,
+  required double height,
+}) {
+  final imageUrl = hall['image']?.toString() ?? '';
+  if (imageUrl.isEmpty) {
+    return _hallImagePlaceholder(width: width, height: height);
+  }
+  return Image.network(
+    imageUrl,
+    width: width,
+    height: height,
+    fit: BoxFit.cover,
+    errorBuilder: (context, error, stackTrace) =>
+        _hallImagePlaceholder(width: width, height: height),
+  );
+}
+
+Widget _hallImagePlaceholder({required double width, required double height}) =>
+    Container(
+      width: width,
+      height: height,
+      color: const Color(0xFFF0E6DD),
+      alignment: Alignment.center,
+      child: const Icon(Icons.business_rounded, color: Color(0xFFB88A68)),
+    );
 
 class HallExploreScreen extends StatelessWidget {
   const HallExploreScreen({super.key});
@@ -18,7 +47,16 @@ class HallExploreScreen extends StatelessWidget {
         itemBuilder: (context, index) {
           final hall = ConferenceSeedData.halls[index];
           return ListTile(
+            leading: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: _hallImage(hall, width: 56, height: 56),
+            ),
             title: Text(hall['name']),
+            subtitle: Text(
+              '${hall['city'] ?? hall['location']} · '
+              'From ৳${hall['price_per_day']}',
+            ),
+            trailing: const Icon(Icons.chevron_right_rounded),
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => HallDetailsScreen(hall: hall)),
@@ -47,12 +85,7 @@ class HallDetailsScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Image.network(
-              hall['image'],
-              height: 250,
-              width: double.infinity,
-              fit: BoxFit.cover,
-            ),
+            _hallImage(hall, height: 250, width: double.infinity),
             Padding(
               padding: const EdgeInsets.all(24.0),
               child: Column(
@@ -73,26 +106,19 @@ class HallDetailsScreen extends StatelessWidget {
                       color: const Color(0xFF8A7A75),
                     ),
                   ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Amenities',
-                    style: GoogleFonts.playfairDisplay(
-                      color: const Color(0xFF3E2C26),
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                  if (hall['description'] is String &&
+                      (hall['description'] as String).isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      hall['description'] as String,
+                      style: GoogleFonts.plusJakartaSans(
+                        color: const Color(0xFF8A7A75),
+                        fontSize: 12,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      if (hall['ac']) _chip('AC'),
-                      if (hall['wifi']) _chip('WiFi'),
-                      if (hall['parking']) _chip('Parking'),
-                    ],
-                  ),
-
+                  ],
+                  const SizedBox(height: 24),
+                  ConferenceHallAvailabilitySection(details: hall),
                   const SizedBox(height: 32),
 
                   // --- FIXED OVERFLOW BOTTOM CARD ---
@@ -165,24 +191,6 @@ class HallDetailsScreen extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _chip(String label) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF0E6DD),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        label,
-        style: GoogleFonts.plusJakartaSans(
-          color: const Color(0xFF3E2C26),
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
         ),
       ),
     );

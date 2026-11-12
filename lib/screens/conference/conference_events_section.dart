@@ -25,7 +25,13 @@ class _ConferenceEventsSectionState extends State<ConferenceEventsSection> {
     _reload();
   }
 
-  void _reload() => _eventsFuture = ConferenceRepository.getConferences();
+  void _reload() {
+    _eventsFuture = ConferenceRepository.getConferences();
+  }
+
+  void _refresh() {
+    if (mounted) setState(_reload);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +48,7 @@ class _ConferenceEventsSectionState extends State<ConferenceEventsSection> {
                     builder: (_) => const ConferenceLandingPage(),
                   ),
                 );
-                if (mounted) setState(_reload);
+                _refresh();
               },
               child: Text(
                 '+ Add New',
@@ -84,7 +90,10 @@ class _ConferenceEventsSectionState extends State<ConferenceEventsSection> {
             }
             return Column(
               children: events
-                  .map((event) => _ConferenceEventCard(event: event))
+                  .map(
+                    (event) =>
+                        _ConferenceEventCard(event: event, onChanged: _refresh),
+                  )
                   .toList(),
             );
           },
@@ -128,10 +137,31 @@ class _ConferenceEventsSectionState extends State<ConferenceEventsSection> {
   );
 }
 
+class ConferenceEventsScreen extends StatelessWidget {
+  const ConferenceEventsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: VoworaColors.darkBackground,
+      appBar: AppBar(
+        title: const Text('My Events · Conference'),
+        backgroundColor: VoworaColors.darkBackground,
+        foregroundColor: Colors.white,
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: const [ConferenceEventsSection()],
+      ),
+    );
+  }
+}
+
 class _ConferenceEventCard extends StatefulWidget {
-  const _ConferenceEventCard({required this.event});
+  const _ConferenceEventCard({required this.event, required this.onChanged});
 
   final ConferenceEvent event;
+  final VoidCallback onChanged;
 
   @override
   State<_ConferenceEventCard> createState() => _ConferenceEventCardState();
@@ -157,11 +187,18 @@ class _ConferenceEventCardState extends State<_ConferenceEventCard> {
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(18),
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute<void>(
-            builder: (_) => ConferenceSummaryScreen(conference: widget.event),
-          ),
-        ),
+        onTap: () async {
+          await Navigator.of(context).push<bool>(
+            MaterialPageRoute<bool>(
+              builder: (_) => ConferenceSummaryScreen(conference: widget.event),
+            ),
+          );
+          if (!mounted) return;
+          setState(() {
+            _bookingsFuture = ConferenceRepository.getBookings(widget.event);
+          });
+          widget.onChanged();
+        },
         child: Padding(
           padding: const EdgeInsets.all(15),
           child: Row(

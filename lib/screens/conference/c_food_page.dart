@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../data/conference/conference_seed_data.dart';
+import '../../widgets/conference_provider_image.dart';
 import 'c_others/booking_bottom_sheet.dart'; // Correct path based on your folder structure
 
 class ConferenceFoodPage extends StatelessWidget {
@@ -53,11 +54,11 @@ class ConferenceFoodPage extends StatelessWidget {
                         borderRadius: const BorderRadius.vertical(
                           top: Radius.circular(20),
                         ),
-                        child: Image.network(
-                          food['image'],
+                        child: ConferenceProviderImage(
+                          imageUrl: food['image'] as String?,
                           height: 180,
                           width: double.infinity,
-                          fit: BoxFit.cover,
+                          placeholderIcon: Icons.restaurant_rounded,
                         ),
                       ),
                       Padding(
@@ -129,11 +130,11 @@ class FoodDetailsScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Image.network(
-              food['image'],
+            ConferenceProviderImage(
+              imageUrl: food['image'] as String?,
               height: 250,
               width: double.infinity,
-              fit: BoxFit.cover,
+              placeholderIcon: Icons.restaurant_rounded,
             ),
             Padding(
               padding: const EdgeInsets.all(24.0),
@@ -156,6 +157,16 @@ class FoodDetailsScreen extends StatelessWidget {
                       fontSize: 14,
                     ),
                   ),
+                  if (food['minimum_guests'] != null) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      'Minimum order: ${food['minimum_guests']} guests',
+                      style: GoogleFonts.plusJakartaSans(
+                        color: const Color(0xFF8A7A75),
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 24),
                   Text(
                     'Menu Packages',

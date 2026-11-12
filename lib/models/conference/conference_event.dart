@@ -39,15 +39,22 @@ class ConferenceEvent {
   final String? userId;
   final bool isLocalOnly;
 
-  ConferenceEvent copyWith({DateTime? eventDate}) => ConferenceEvent(
+  ConferenceEvent copyWith({
+    String? title,
+    String? slogan,
+    DateTime? eventDate,
+    String? organizerName,
+    String? organizerEmail,
+    String? location,
+  }) => ConferenceEvent(
     id: id,
     code: code,
-    title: title,
-    slogan: slogan,
+    title: title ?? this.title,
+    slogan: slogan ?? this.slogan,
     eventDate: eventDate ?? this.eventDate,
-    organizerName: organizerName,
-    organizerEmail: organizerEmail,
-    location: location,
+    organizerName: organizerName ?? this.organizerName,
+    organizerEmail: organizerEmail ?? this.organizerEmail,
+    location: location ?? this.location,
     userId: userId,
     isLocalOnly: isLocalOnly,
   );

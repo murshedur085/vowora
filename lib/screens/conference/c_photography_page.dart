@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../data/conference/conference_seed_data.dart';
+import '../../widgets/conference_provider_image.dart';
 import 'c_others/booking_bottom_sheet.dart';
 
 class ConferencePhotographyPage extends StatelessWidget {
@@ -28,7 +29,15 @@ class ConferencePhotographyPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ClipRRect(borderRadius: const BorderRadius.vertical(top: Radius.circular(20)), child: Image.network(photo['image'], height: 160, width: double.infinity, fit: BoxFit.cover)),
+                      ClipRRect(
+                        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                        child: ConferenceProviderImage(
+                          imageUrl: photo['image'] as String?,
+                          height: 160,
+                          width: double.infinity,
+                          placeholderIcon: Icons.camera_alt_outlined,
+                        ),
+                      ),
                       Padding(padding: const EdgeInsets.all(16.0), child: Text(photo['name'], style: GoogleFonts.playfairDisplay(color: const Color(0xFF3E2C26), fontSize: 18, fontWeight: FontWeight.bold))),
                     ],
                   ),
@@ -57,7 +66,12 @@ class PhotographyDetailsScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Image.network(photo['image'], height: 250, width: double.infinity, fit: BoxFit.cover),
+            ConferenceProviderImage(
+              imageUrl: photo['image'] as String?,
+              height: 250,
+              width: double.infinity,
+              placeholderIcon: Icons.camera_alt_outlined,
+            ),
             Padding(
               padding: const EdgeInsets.all(24.0),
               child: Column(

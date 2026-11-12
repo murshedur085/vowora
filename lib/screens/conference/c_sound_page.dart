@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../data/conference/conference_seed_data.dart';
+import '../../widgets/conference_provider_image.dart';
 import 'c_others/booking_bottom_sheet.dart';
 
 class ConferenceSoundPage extends StatelessWidget {
@@ -35,7 +36,12 @@ class ConferenceSoundPage extends StatelessWidget {
                     children: [
                       ClipRRect(
                         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-                        child: Image.network(sound['image'], height: 160, width: double.infinity, fit: BoxFit.cover),
+                        child: ConferenceProviderImage(
+                          imageUrl: sound['image'] as String?,
+                          height: 160,
+                          width: double.infinity,
+                          placeholderIcon: Icons.speaker_group_outlined,
+                        ),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(16.0),
@@ -68,7 +74,12 @@ class SoundDetailsScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Image.network(sound['image'], height: 250, width: double.infinity, fit: BoxFit.cover),
+            ConferenceProviderImage(
+              imageUrl: sound['image'] as String?,
+              height: 250,
+              width: double.infinity,
+              placeholderIcon: Icons.speaker_group_outlined,
+            ),
             Padding(
               padding: const EdgeInsets.all(24.0),
               child: Column(

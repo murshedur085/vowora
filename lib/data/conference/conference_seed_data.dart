@@ -6,6 +6,7 @@ class ConferenceExpandedData {
       'id': 'hall_01',
       'name': 'Grand Palace Convention',
       'city': 'Dhaka',
+      'image_url': 'https://iili.io/npOhDFf.webp',
       'capacity': 300,
       'price': 35000,
       'facilities': ['AC', 'WiFi', 'CCTV', 'Parking', 'Stage', 'Generator'],
@@ -15,9 +16,9 @@ class ConferenceExpandedData {
         'outside_sound': false,
       },
       'packages': [
-        {'name': 'Basic', 'price': 35000, 'duration': '6 Hours'},
-        {'name': 'Standard', 'price': 47000, 'duration': '10 Hours'},
-        {'name': 'Premium', 'price': 60000, 'duration': '12 Hours'},
+        {'name': 'Basic', 'price': 35000, 'duration': 'Morning to evening'},
+        {'name': 'Standard', 'price': 47000, 'duration': 'Evening to late night'},
+        {'name': 'Premium', 'price': 60000, 'duration': 'Full day'},
       ],
       'addons': [
         {'name': 'Projector', 'price': 2500},
@@ -29,14 +30,15 @@ class ConferenceExpandedData {
       'id': 'hall_02',
       'name': 'Radisson Blu Water Garden',
       'city': 'Dhaka',
+      'image_url': 'https://iili.io/npOwWzP.webp',
       'capacity': 800,
       'price': 95000,
       'facilities': ['AC', 'WiFi', 'CCTV', 'Parking', 'Stage', 'Generator', 'Green Room'],
       'policies': {'outside_food': false, 'outside_decoration': true, 'outside_sound': false},
       'packages': [
-        {'name': 'Basic', 'price': 95000, 'duration': '6 Hours'},
-        {'name': 'Standard', 'price': 107000, 'duration': '10 Hours'},
-        {'name': 'Premium', 'price': 120000, 'duration': '12 Hours'},
+        {'name': 'Basic', 'price': 95000, 'duration': 'Morning to evening'},
+        {'name': 'Standard', 'price': 107000, 'duration': 'Evening to late night'},
+        {'name': 'Premium', 'price': 120000, 'duration': 'Full day'},
       ],
       'addons': [
         {'name': 'LED Screen', 'price': 12000},
@@ -48,14 +50,15 @@ class ConferenceExpandedData {
       'id': 'hall_03',
       'name': 'Bashundhara Convention Hall',
       'city': 'Dhaka',
+      'image_url': 'https://iili.io/npOeKzB.png',
       'capacity': 1200,
       'price': 120000,
       'facilities': ['AC', 'WiFi', 'CCTV', 'Parking', 'Stage', 'Generator'],
       'policies': {'outside_food': true, 'outside_decoration': true, 'outside_sound': true},
       'packages': [
-        {'name': 'Basic', 'price': 120000, 'duration': '6 Hours'},
-        {'name': 'Standard', 'price': 132000, 'duration': '10 Hours'},
-        {'name': 'Premium', 'price': 145000, 'duration': '12 Hours'},
+        {'name': 'Basic', 'price': 120000, 'duration': 'Morning to evening'},
+        {'name': 'Standard', 'price': 132000, 'duration': 'Evening to late night'},
+        {'name': 'Premium', 'price': 145000, 'duration': 'Full day'},
       ],
       'addons': [
         {'name': 'LED Wall', 'price': 15000},
@@ -65,128 +68,86 @@ class ConferenceExpandedData {
     },
     {
       'id': 'hall_04',
-      'name': 'Pan Pacific Sonargaon',
-      'city': 'Dhaka',
-      'capacity': 500,
-      'price': 85000,
-      'facilities': ['AC', 'WiFi', 'CCTV', 'Parking', 'Stage', 'Generator'],
-      'policies': {'outside_food': false, 'outside_decoration': true, 'outside_sound': false},
+      'name': 'Kushiara',
+      'city': 'Sylhet',
+      'image_url': 'https://iili.io/npcdvsI.jpg',
+      'price': 35000,
+      'description':
+          'Estimated prices; facility details are not provided. Confirm with the venue.',
       'packages': [
-        {'name': 'Basic', 'price': 85000, 'duration': '6 Hours'},
-        {'name': 'Standard', 'price': 97000, 'duration': '10 Hours'},
-        {'name': 'Premium', 'price': 110000, 'duration': '12 Hours'},
-      ],
-      'addons': [
-        {'name': 'Projector', 'price': 4000},
-        {'name': 'Premium Lighting', 'price': 6000},
+        {'name': 'Basic', 'price': 35000, 'duration': 'Morning to evening'},
+        {'name': 'Standard', 'price': 47000, 'duration': 'Evening to late night'},
+        {'name': 'Premium', 'price': 60000, 'duration': 'Full day'},
       ],
     },
     {
       'id': 'hall_05',
-      'name': 'Le Méridien Dhaka',
-      'city': 'Dhaka',
-      'capacity': 450,
-      'price': 90000,
-      'facilities': ['AC', 'WiFi', 'CCTV', 'Parking', 'Stage', 'Green Room'],
-      'policies': {'outside_food': false, 'outside_decoration': true, 'outside_sound': false},
+      'name': 'Khan Palace',
+      'city': 'Sylhet',
+      'image_url': 'https://iili.io/npcqFlS.webp',
+      'price': 45000,
+      'description':
+          'Estimated prices; facility details are not provided. Confirm with the venue.',
       'packages': [
-        {'name': 'Basic', 'price': 90000, 'duration': '6 Hours'},
-        {'name': 'Standard', 'price': 102000, 'duration': '10 Hours'},
-        {'name': 'Premium', 'price': 115000, 'duration': '12 Hours'},
-      ],
-      'addons': [
-        {'name': 'LED Screen', 'price': 10000},
-        {'name': 'Extra Hour', 'price': 5000},
+        {'name': 'Basic', 'price': 45000, 'duration': 'Morning to evening'},
+        {'name': 'Standard', 'price': 58000, 'duration': 'Evening to late night'},
+        {'name': 'Premium', 'price': 72000, 'duration': 'Full day'},
       ],
     },
     {
       'id': 'hall_06',
-      'name': 'The Westin Dhaka',
-      'city': 'Dhaka',
-      'capacity': 400,
-      'price': 88000,
-      'facilities': ['AC', 'WiFi', 'CCTV', 'Parking', 'Stage', 'Generator'],
-      'policies': {'outside_food': false, 'outside_decoration': false, 'outside_sound': false},
+      'name': 'Amanulla',
+      'city': 'Sylhet',
+      'image_url': 'https://iili.io/npcBpnf.jpg',
+      'price': 30000,
+      'description':
+          'Estimated prices; facility details are not provided. Confirm with the venue.',
       'packages': [
-        {'name': 'Basic', 'price': 88000, 'duration': '6 Hours'},
-        {'name': 'Standard', 'price': 100000, 'duration': '10 Hours'},
-        {'name': 'Premium', 'price': 113000, 'duration': '12 Hours'},
-      ],
-      'addons': [
-        {'name': 'Projector', 'price': 4000},
-        {'name': 'Stage Lighting', 'price': 7000},
+        {'name': 'Basic', 'price': 30000, 'duration': 'Morning to evening'},
+        {'name': 'Standard', 'price': 42000, 'duration': 'Evening to late night'},
+        {'name': 'Premium', 'price': 55000, 'duration': 'Full day'},
       ],
     },
     {
       'id': 'hall_07',
-      'name': 'International Convention City',
-      'city': 'Dhaka',
-      'capacity': 2000,
-      'price': 180000,
-      'facilities': ['AC', 'WiFi', 'CCTV', 'Parking', 'Stage', 'Generator', 'Green Room'],
-      'policies': {'outside_food': true, 'outside_decoration': true, 'outside_sound': true},
+      'name': 'Hill View',
+      'city': 'Sylhet',
+      'image_url': 'https://iili.io/npcolYN.webp',
+      'price': 32000,
+      'description':
+          'Estimated prices; facility details are not provided. Confirm with the venue.',
       'packages': [
-        {'name': 'Basic', 'price': 180000, 'duration': '6 Hours'},
-        {'name': 'Standard', 'price': 192000, 'duration': '10 Hours'},
-        {'name': 'Premium', 'price': 205000, 'duration': '12 Hours'},
-      ],
-      'addons': [
-        {'name': 'LED Wall', 'price': 20000},
-        {'name': 'VIP Room', 'price': 10000},
+        {'name': 'Basic', 'price': 32000, 'duration': 'Morning to evening'},
+        {'name': 'Standard', 'price': 44000, 'duration': 'Evening to late night'},
+        {'name': 'Premium', 'price': 57000, 'duration': 'Full day'},
       ],
     },
     {
       'id': 'hall_08',
-      'name': 'Six Seasons Hotel',
-      'city': 'Dhaka',
-      'capacity': 350,
-      'price': 70000,
-      'facilities': ['AC', 'WiFi', 'CCTV', 'Parking', 'Stage'],
-      'policies': {'outside_food': false, 'outside_decoration': true, 'outside_sound': false},
+      'name': 'Mutalib',
+      'city': 'Sylhet',
+      'image_url': 'https://iili.io/npczLI1.webp',
+      'price': 28000,
+      'description':
+          'Estimated prices; facility details are not provided. Confirm with the venue.',
       'packages': [
-        {'name': 'Basic', 'price': 70000, 'duration': '6 Hours'},
-        {'name': 'Standard', 'price': 82000, 'duration': '10 Hours'},
-        {'name': 'Premium', 'price': 95000, 'duration': '12 Hours'},
-      ],
-      'addons': [
-        {'name': 'Projector', 'price': 3000},
-        {'name': 'Extra Hour', 'price': 4000},
+        {'name': 'Basic', 'price': 28000, 'duration': 'Morning to evening'},
+        {'name': 'Standard', 'price': 40000, 'duration': 'Evening to late night'},
+        {'name': 'Premium', 'price': 52000, 'duration': 'Full day'},
       ],
     },
     {
       'id': 'hall_09',
-      'name': 'Amari Dhaka',
-      'city': 'Dhaka',
-      'capacity': 320,
-      'price': 75000,
-      'facilities': ['AC', 'WiFi', 'CCTV', 'Parking', 'Stage'],
-      'policies': {'outside_food': false, 'outside_decoration': true, 'outside_sound': false},
+      'name': 'Atic',
+      'city': 'Sylhet',
+      'image_url': 'https://iili.io/npcIbt9.webp',
+      'price': 35000,
+      'description':
+          'Estimated prices; facility details are not provided. Confirm with the venue.',
       'packages': [
-        {'name': 'Basic', 'price': 75000, 'duration': '6 Hours'},
-        {'name': 'Standard', 'price': 87000, 'duration': '10 Hours'},
-        {'name': 'Premium', 'price': 100000, 'duration': '12 Hours'},
-      ],
-      'addons': [
-        {'name': 'LED Screen', 'price': 10000},
-        {'name': 'Extra Hour', 'price': 4000},
-      ],
-    },
-    {
-      'id': 'hall_10',
-      'name': 'Hotel Sarina',
-      'city': 'Dhaka',
-      'capacity': 380,
-      'price': 68000,
-      'facilities': ['AC', 'WiFi', 'CCTV', 'Parking', 'Stage', 'Generator'],
-      'policies': {'outside_food': false, 'outside_decoration': true, 'outside_sound': false},
-      'packages': [
-        {'name': 'Basic', 'price': 68000, 'duration': '6 Hours'},
-        {'name': 'Standard', 'price': 80000, 'duration': '10 Hours'},
-        {'name': 'Premium', 'price': 93000, 'duration': '12 Hours'},
-      ],
-      'addons': [
-        {'name': 'Projector', 'price': 3000},
-        {'name': 'Extra Hour', 'price': 3500},
+        {'name': 'Basic', 'price': 35000, 'duration': 'Morning to evening'},
+        {'name': 'Standard', 'price': 47000, 'duration': 'Evening to late night'},
+        {'name': 'Premium', 'price': 60000, 'duration': 'Full day'},
       ],
     },
   ];
@@ -224,12 +185,12 @@ class ConferenceExpandedData {
   ];
 
   static const foods = [
-    {'id': 'food_01', 'name': 'Dhaka Catering Services', 'city': 'Dhaka', 'minimum_guests': 20, 'starting_price': 180},
-    {'id': 'food_02', 'name': 'Premium Bites', 'city': 'Dhaka', 'minimum_guests': 30, 'starting_price': 220},
-    {'id': 'food_03', 'name': 'Kacchi Bhai', 'city': 'Dhaka', 'minimum_guests': 20, 'starting_price': 250},
-    {'id': 'food_04', 'name': 'Sultans Dine', 'city': 'Dhaka', 'minimum_guests': 20, 'starting_price': 250},
-    {'id': 'food_05', 'name': 'Tabaq Coffee', 'city': 'Dhaka', 'minimum_guests': 20, 'starting_price': 150},
-    {'id': 'food_06', 'name': 'Cafe Rio', 'city': 'Dhaka', 'minimum_guests': 20, 'starting_price': 180},
+    {'id': 'food_01', 'name': 'Unnoon Restaurant', 'city': 'Sylhet', 'image_url': 'https://iili.io/npeNbdG.jpg', 'minimum_guests': 20, 'starting_price': 180},
+    {'id': 'food_02', 'name': 'Wok Restaurant', 'city': 'Sylhet', 'image_url': 'https://iili.io/npeNZ1n.jpg', 'minimum_guests': 30, 'starting_price': 220},
+    {'id': 'food_03', 'name': 'La Bistro', 'city': 'Sylhet', 'image_url': 'https://iili.io/npeNm7f.jpg', 'minimum_guests': 20, 'starting_price': 250},
+    {'id': 'food_04', 'name': 'Ozz Cafe', 'city': 'Dhaka', 'image_url': 'https://iili.io/npeNtgs.jpg', 'minimum_guests': 20, 'starting_price': 250},
+    {'id': 'food_05', 'name': 'Attitude Restaurant at Holiday Inn Dhaka', 'city': 'Dhaka', 'image_url': 'https://iili.io/npeNyml.webp', 'minimum_guests': 20, 'starting_price': 150},
+    {'id': 'food_06', 'name': 'The Grand Kitchen', 'city': 'Dhaka', 'image_url': 'https://iili.io/npeOHI2.jpg', 'minimum_guests': 20, 'starting_price': 180},
     {'id': 'food_07', 'name': 'Star Kabab', 'city': 'Dhaka', 'minimum_guests': 20, 'starting_price': 170},
     {'id': 'food_08', 'name': 'Herfy', 'city': 'Dhaka', 'minimum_guests': 20, 'starting_price': 200},
     {'id': 'food_09', 'name': 'Pizza Hut', 'city': 'Dhaka', 'minimum_guests': 20, 'starting_price': 300},
@@ -237,32 +198,32 @@ class ConferenceExpandedData {
   ];
 
   static const sounds = [
-    {'id': 'sound_01', 'name': 'ProAudio Events', 'city': 'Dhaka', 'packages': [
+    {'id': 'sound_01', 'name': 'Silsila', 'city': 'Sylhet', 'image_url': 'https://iili.io/npemij2.png', 'packages': [
       {'name': 'Normal', 'price': 12000, 'includes': ['2 Speakers', '2 Microphones', 'Mixer', 'Operator']},
       {'name': 'Pro', 'price': 22000, 'includes': ['4 Speakers', '4 Wireless Mics', 'Digital Mixer', 'Projector']},
       {'name': 'Pro Plus', 'price': 37000, 'includes': ['PA System', 'LED Screen', '6 Wireless Mics', 'Stage Lighting']},
     ]},
-    {'id': 'sound_02', 'name': 'Sound Master BD', 'city': 'Dhaka', 'packages': [
+    {'id': 'sound_02', 'name': 'RJ Sound & Screens', 'city': 'Sylhet', 'image_url': 'https://iili.io/npemPTl.jpg', 'packages': [
       {'name': 'Normal', 'price': 13500, 'includes': ['2 Speakers', '2 Microphones', 'Mixer']},
       {'name': 'Pro', 'price': 23500, 'includes': ['4 Speakers', '4 Wireless Mics', 'Projector']},
       {'name': 'Pro Plus', 'price': 38500, 'includes': ['PA System', 'LED Screen', 'Stage Lighting']},
     ]},
-    {'id': 'sound_03', 'name': 'Mega Sound', 'city': 'Dhaka', 'packages': [
+    {'id': 'sound_03', 'name': 'The Sylhet Sound', 'city': 'Sylhet', 'image_url': 'https://iili.io/npemrvf.jpg', 'packages': [
       {'name': 'Normal', 'price': 15000, 'includes': ['2 Speakers', '2 Microphones', 'Operator']},
       {'name': 'Pro', 'price': 25000, 'includes': ['4 Speakers', '4 Wireless Mics', 'Digital Mixer']},
       {'name': 'Pro Plus', 'price': 40000, 'includes': ['PA System', 'LED Wall', 'Stage Lighting']},
     ]},
-    {'id': 'sound_04', 'name': 'Elite AV Solutions', 'city': 'Dhaka', 'packages': [
+    {'id': 'sound_04', 'name': 'After Party Sound & Screens', 'city': 'Dhaka', 'image_url': 'https://iili.io/npem4p4.jpg', 'packages': [
       {'name': 'Normal', 'price': 16500, 'includes': ['2 Speakers', '2 Microphones', 'Mixer']},
       {'name': 'Pro', 'price': 26500, 'includes': ['4 Speakers', '4 Wireless Mics', 'Projector']},
       {'name': 'Pro Plus', 'price': 41500, 'includes': ['PA System', 'LED Screen', 'AV Team']},
     ]},
-    {'id': 'sound_05', 'name': 'DJ Rafi Setup', 'city': 'Dhaka', 'packages': [
+    {'id': 'sound_05', 'name': 'Selvent Planner', 'city': 'Dhaka', 'image_url': 'https://iili.io/npemZG9.jpg', 'packages': [
       {'name': 'Normal', 'price': 12000, 'includes': ['DJ Console', '2 Speakers', 'Operator']},
       {'name': 'Pro', 'price': 22000, 'includes': ['DJ Console', '4 Speakers', 'Lighting']},
       {'name': 'Pro Plus', 'price': 35000, 'includes': ['DJ Console', 'LED Screen', 'Lighting', 'PA System']},
     ]},
-    {'id': 'sound_06', 'name': 'VisualPro Screens', 'city': 'Dhaka', 'packages': [
+    {'id': 'sound_06', 'name': 'Dhaka International Sound', 'city': 'Dhaka', 'image_url': 'https://iili.io/npemQC7.jpg', 'packages': [
       {'name': 'Normal', 'price': 14000, 'includes': ['Projector', 'Screen', 'Operator']},
       {'name': 'Pro', 'price': 26000, 'includes': ['HD Projector', 'LED Screen', 'AV Operator']},
       {'name': 'Pro Plus', 'price': 42000, 'includes': ['Large LED Wall', 'Multiple Displays', 'AV Team']},
@@ -290,32 +251,32 @@ class ConferenceExpandedData {
   ];
 
   static const decorations = [
-    {'id': 'decor_01', 'name': 'Elegant Events Decor', 'city': 'Dhaka', 'packages': [
+    {'id': 'decor_01', 'name': 'Sessions Decor', 'city': 'Sylhet', 'image_url': 'https://iili.io/npkF9Lv.png', 'packages': [
       {'name': 'Basic', 'price': 18000, 'includes': ['Stage Backdrop', 'Welcome Sign']},
       {'name': 'Standard', 'price': 30000, 'includes': ['Stage', 'Flowers', 'Lighting', 'Entrance']},
       {'name': 'Premium', 'price': 48000, 'includes': ['Custom Stage', 'Premium Flowers', 'Full Venue Lighting', 'Branding']},
     ]},
-    {'id': 'decor_02', 'name': 'Floral Fantasy', 'city': 'Dhaka', 'packages': [
+    {'id': 'decor_02', 'name': 'A2Z Event', 'city': 'Sylhet', 'image_url': 'https://iili.io/npk3DkF.jpg', 'packages': [
       {'name': 'Basic', 'price': 20000, 'includes': ['Flower Backdrop', 'Stage Flowers']},
       {'name': 'Standard', 'price': 33000, 'includes': ['Floral Stage', 'Entrance Flowers', 'Table Centerpieces']},
       {'name': 'Premium', 'price': 52000, 'includes': ['Luxury Floral Design', 'Full Stage', 'Entrance Installation']},
     ]},
-    {'id': 'decor_03', 'name': 'Theme Crafters', 'city': 'Dhaka', 'packages': [
+    {'id': 'decor_03', 'name': 'Topflight', 'city': 'Sylhet', 'image_url': 'https://iili.io/npk3yhJ.jpg', 'packages': [
       {'name': 'Basic', 'price': 22000, 'includes': ['Theme Backdrop', 'Stage']},
       {'name': 'Standard', 'price': 35000, 'includes': ['Custom Theme', 'Lighting', 'Entrance']},
       {'name': 'Premium', 'price': 55000, 'includes': ['Full Custom Theme', 'Stage', 'Branding', 'Lighting']},
     ]},
-    {'id': 'decor_04', 'name': 'Light & Shadow', 'city': 'Dhaka', 'packages': [
+    {'id': 'decor_04', 'name': 'Event Esyfyn', 'city': 'Dhaka', 'image_url': 'https://iili.io/npk3pIa.jpg', 'packages': [
       {'name': 'Basic', 'price': 19000, 'includes': ['Basic Lighting', 'Backdrop']},
       {'name': 'Standard', 'price': 32000, 'includes': ['Stage Lighting', 'Backdrop', 'Entrance']},
       {'name': 'Premium', 'price': 50000, 'includes': ['Full Venue Lighting', 'LED Backdrop', 'Stage Design']},
     ]},
-    {'id': 'decor_05', 'name': 'Balloon Bliss', 'city': 'Dhaka', 'packages': [
+    {'id': 'decor_05', 'name': 'Avalon', 'city': 'Dhaka', 'image_url': 'https://iili.io/npkFJBR.jpg', 'packages': [
       {'name': 'Basic', 'price': 15000, 'includes': ['Balloon Backdrop', 'Welcome Area']},
       {'name': 'Standard', 'price': 27000, 'includes': ['Balloon Arch', 'Stage', 'Entrance']},
       {'name': 'Premium', 'price': 43000, 'includes': ['Custom Balloon Installation', 'Stage', 'Photo Zone']},
     ]},
-    {'id': 'decor_06', 'name': 'Royal Decor BD', 'city': 'Dhaka', 'packages': [
+    {'id': 'decor_06', 'name': 'RB Events', 'city': 'Dhaka', 'image_url': 'https://iili.io/npkC0g4.jpg', 'packages': [
       {'name': 'Basic', 'price': 24000, 'includes': ['Royal Backdrop', 'Stage Flowers']},
       {'name': 'Standard', 'price': 38000, 'includes': ['Premium Stage', 'Entrance', 'Lighting']},
       {'name': 'Premium', 'price': 60000, 'includes': ['Luxury Theme', 'Full Stage', 'Floral Work', 'Lighting']},
@@ -343,32 +304,32 @@ class ConferenceExpandedData {
   ];
 
   static const photography = [
-    {'id': 'photo_01', 'name': 'Chitrogolpo Studios', 'city': 'Dhaka', 'packages': [
+    {'id': 'photo_01', 'name': 'Dero', 'city': 'Sylhet', 'image_url': 'https://iili.io/npkE3k7.jpg', 'packages': [
       {'name': 'Basic', 'price': 15000, 'hours': 3, 'photographers': 1, 'videographers': 0, 'drone': false, 'edited_photos': 100, 'delivery_days': 7},
       {'name': 'Pro', 'price': 27000, 'hours': 6, 'photographers': 2, 'videographers': 1, 'drone': false, 'edited_photos': 250, 'delivery_days': 10},
       {'name': 'Cinematic', 'price': 45000, 'hours': 10, 'photographers': 2, 'videographers': 1, 'drone': true, 'edited_photos': 400, 'delivery_days': 14},
     ]},
-    {'id': 'photo_02', 'name': 'Lens Life BD', 'city': 'Dhaka', 'packages': [
+    {'id': 'photo_02', 'name': 'Media Hub', 'city': 'Sylhet', 'image_url': 'https://iili.io/npkEFp9.jpg', 'packages': [
       {'name': 'Basic', 'price': 16000, 'hours': 3, 'photographers': 1, 'videographers': 0, 'drone': false, 'edited_photos': 100, 'delivery_days': 7},
       {'name': 'Pro', 'price': 28000, 'hours': 6, 'photographers': 2, 'videographers': 1, 'drone': false, 'edited_photos': 250, 'delivery_days': 10},
       {'name': 'Cinematic', 'price': 46000, 'hours': 10, 'photographers': 2, 'videographers': 1, 'drone': true, 'edited_photos': 400, 'delivery_days': 14},
     ]},
-    {'id': 'photo_03', 'name': 'Frame Perfect', 'city': 'Dhaka', 'packages': [
+    {'id': 'photo_03', 'name': 'Pro Shooters', 'city': 'Sylhet', 'image_url': 'https://iili.io/npkEFp9.jpg', 'packages': [
       {'name': 'Basic', 'price': 17000, 'hours': 3, 'photographers': 1, 'videographers': 0, 'drone': false, 'edited_photos': 100, 'delivery_days': 7},
       {'name': 'Pro', 'price': 29000, 'hours': 6, 'photographers': 2, 'videographers': 1, 'drone': false, 'edited_photos': 250, 'delivery_days': 10},
       {'name': 'Cinematic', 'price': 47000, 'hours': 10, 'photographers': 2, 'videographers': 1, 'drone': true, 'edited_photos': 400, 'delivery_days': 14},
     ]},
-    {'id': 'photo_04', 'name': 'Visual Storytellers', 'city': 'Dhaka', 'packages': [
+    {'id': 'photo_04', 'name': 'Story and Lens', 'city': 'Dhaka', 'image_url': 'https://iili.io/npkEqhu.png', 'packages': [
       {'name': 'Basic', 'price': 18000, 'hours': 3, 'photographers': 1, 'videographers': 0, 'drone': false, 'edited_photos': 100, 'delivery_days': 7},
       {'name': 'Pro', 'price': 30000, 'hours': 6, 'photographers': 2, 'videographers': 1, 'drone': false, 'edited_photos': 250, 'delivery_days': 10},
       {'name': 'Cinematic', 'price': 48000, 'hours': 10, 'photographers': 2, 'videographers': 1, 'drone': true, 'edited_photos': 400, 'delivery_days': 14},
     ]},
-    {'id': 'photo_05', 'name': 'Pixel Studio', 'city': 'Dhaka', 'packages': [
+    {'id': 'photo_05', 'name': 'Open Studio', 'city': 'Dhaka', 'image_url': 'https://iili.io/npkEBLb.jpg', 'packages': [
       {'name': 'Basic', 'price': 19000, 'hours': 3, 'photographers': 1, 'videographers': 0, 'drone': false, 'edited_photos': 100, 'delivery_days': 7},
       {'name': 'Pro', 'price': 31000, 'hours': 6, 'photographers': 2, 'videographers': 1, 'drone': false, 'edited_photos': 250, 'delivery_days': 10},
       {'name': 'Cinematic', 'price': 49000, 'hours': 10, 'photographers': 2, 'videographers': 1, 'drone': true, 'edited_photos': 400, 'delivery_days': 14},
     ]},
-    {'id': 'photo_06', 'name': 'Drone Shots BD', 'city': 'Dhaka', 'packages': [
+    {'id': 'photo_06', 'name': 'Product Shine', 'city': 'Dhaka', 'image_url': 'https://iili.io/npkEoEx.jpg', 'packages': [
       {'name': 'Basic', 'price': 20000, 'hours': 3, 'photographers': 1, 'videographers': 0, 'drone': true, 'edited_photos': 100, 'delivery_days': 7},
       {'name': 'Pro', 'price': 32000, 'hours': 6, 'photographers': 2, 'videographers': 1, 'drone': true, 'edited_photos': 250, 'delivery_days': 10},
       {'name': 'Cinematic', 'price': 50000, 'hours': 10, 'photographers': 2, 'videographers': 1, 'drone': true, 'edited_photos': 400, 'delivery_days': 14},
@@ -395,8 +356,14 @@ class ConferenceExpandedData {
     ]},
   ];
 
+  static const _transportPackages = [
+    {'name': 'Basic', 'vehicle_quantities': {'v01': 1}},
+    {'name': 'Standard', 'vehicle_quantities': {'v02': 1, 'v03': 1}},
+    {'name': 'Premium', 'vehicle_quantities': {'v02': 1, 'v03': 1, 'v05': 1, 'v06': 1}},
+  ];
+
   static const transport = [
-    {'id': 'transport_01', 'name': 'Luxury Rides BD', 'city': 'Dhaka', 'vehicles': [
+    {'id': 'transport_01', 'name': 'JatriBondhu Transport', 'city': 'Sylhet', 'image_url': 'https://iili.io/npkw4B1.jpg', 'packages': _transportPackages, 'vehicles': [
       {'id': 'v01', 'name': 'Sedan', 'capacity': 4, 'price_per_day': 3500},
       {'id': 'v02', 'name': 'Premium Sedan', 'capacity': 4, 'price_per_day': 5500},
       {'id': 'v03', 'name': 'Microbus', 'capacity': 12, 'price_per_day': 6500},
@@ -404,7 +371,7 @@ class ConferenceExpandedData {
       {'id': 'v05', 'name': 'Mini Bus', 'capacity': 30, 'price_per_day': 12000},
       {'id': 'v06', 'name': 'Large Coach', 'capacity': 40, 'price_per_day': 16000},
     ]},
-    {'id': 'transport_02', 'name': 'Dhaka Car Rental', 'city': 'Dhaka', 'vehicles': [
+    {'id': 'transport_02', 'name': 'Royal Route Transport', 'city': 'Sylhet', 'image_url': 'https://iili.io/npkwPrg.jpg', 'packages': _transportPackages, 'vehicles': [
       {'id': 'v01', 'name': 'Sedan', 'capacity': 4, 'price_per_day': 3800},
       {'id': 'v02', 'name': 'Premium Sedan', 'capacity': 4, 'price_per_day': 5800},
       {'id': 'v03', 'name': 'Microbus', 'capacity': 12, 'price_per_day': 6800},
@@ -412,7 +379,7 @@ class ConferenceExpandedData {
       {'id': 'v05', 'name': 'Mini Bus', 'capacity': 30, 'price_per_day': 12300},
       {'id': 'v06', 'name': 'Large Coach', 'capacity': 40, 'price_per_day': 16300},
     ]},
-    {'id': 'transport_03', 'name': 'Executive Transport', 'city': 'Dhaka', 'vehicles': [
+    {'id': 'transport_03', 'name': 'DeshRide Transport', 'city': 'Sylhet', 'image_url': 'https://iili.io/npkwUhB.jpg', 'packages': _transportPackages, 'vehicles': [
       {'id': 'v01', 'name': 'Sedan', 'capacity': 4, 'price_per_day': 4000},
       {'id': 'v02', 'name': 'Premium Sedan', 'capacity': 4, 'price_per_day': 6000},
       {'id': 'v03', 'name': 'Microbus', 'capacity': 12, 'price_per_day': 7000},
@@ -420,7 +387,7 @@ class ConferenceExpandedData {
       {'id': 'v05', 'name': 'Mini Bus', 'capacity': 30, 'price_per_day': 12500},
       {'id': 'v06', 'name': 'Large Coach', 'capacity': 40, 'price_per_day': 16500},
     ]},
-    {'id': 'transport_04', 'name': 'VIP Shuttle', 'city': 'Dhaka', 'vehicles': [
+    {'id': 'transport_04', 'name': 'BanglaWay Travels', 'city': 'Dhaka', 'image_url': 'https://iili.io/npkwgLP.jpg', 'packages': _transportPackages, 'vehicles': [
       {'id': 'v01', 'name': 'Sedan', 'capacity': 4, 'price_per_day': 4200},
       {'id': 'v02', 'name': 'Premium Sedan', 'capacity': 4, 'price_per_day': 6200},
       {'id': 'v03', 'name': 'Microbus', 'capacity': 12, 'price_per_day': 7200},
@@ -428,7 +395,7 @@ class ConferenceExpandedData {
       {'id': 'v05', 'name': 'Mini Bus', 'capacity': 30, 'price_per_day': 12700},
       {'id': 'v06', 'name': 'Large Coach', 'capacity': 40, 'price_per_day': 16700},
     ]},
-    {'id': 'transport_05', 'name': 'City Movers', 'city': 'Dhaka', 'vehicles': [
+    {'id': 'transport_05', 'name': 'Nirapod Journey', 'city': 'Dhaka', 'image_url': 'https://iili.io/npkwZpR.jpg', 'packages': _transportPackages, 'vehicles': [
       {'id': 'v01', 'name': 'Sedan', 'capacity': 4, 'price_per_day': 3600},
       {'id': 'v02', 'name': 'Premium Sedan', 'capacity': 4, 'price_per_day': 5600},
       {'id': 'v03', 'name': 'Microbus', 'capacity': 12, 'price_per_day': 6600},
@@ -436,7 +403,7 @@ class ConferenceExpandedData {
       {'id': 'v05', 'name': 'Mini Bus', 'capacity': 30, 'price_per_day': 12100},
       {'id': 'v06', 'name': 'Large Coach', 'capacity': 40, 'price_per_day': 16100},
     ]},
-    {'id': 'transport_06', 'name': 'Elite Chauffeur', 'city': 'Dhaka', 'vehicles': [
+    {'id': 'transport_06', 'name': 'DeshLink Mobility', 'city': 'Dhaka', 'image_url': 'https://iili.io/npkwbhN.jpg', 'packages': _transportPackages, 'vehicles': [
       {'id': 'v01', 'name': 'Sedan', 'capacity': 4, 'price_per_day': 4500},
       {'id': 'v02', 'name': 'Premium Sedan', 'capacity': 4, 'price_per_day': 6500},
       {'id': 'v03', 'name': 'Microbus', 'capacity': 12, 'price_per_day': 7500},
@@ -522,31 +489,18 @@ class ConferenceExpandedData {
 }
 
 class ConferenceSeedData {
-  static const _images = {
-    'hall':
-        'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1200&q=80',
-    'food':
-        'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=1200&q=80',
-    'sound':
-        'https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=1200&q=80',
-    'decoration':
-        'https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1200&q=80',
-    'photography':
-        'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1200&q=80',
-    'transportation':
-        'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=1200&q=80',
-  };
-
   static final List<Map<String, dynamic>> halls =
       ConferenceExpandedData.halls.map((record) {
-    final provider = _common(record, 'hall');
-    final facilities = (record['facilities'] as List?) ?? const [];
-    provider.addAll({
-      'price_per_day': record['price'],
-      'ac': facilities.contains('AC'),
-      'wifi': facilities.contains('WiFi'),
-      'parking': facilities.contains('Parking'),
-    });
+    final provider = _common(record);
+    provider['price_per_day'] = record['price'];
+    final facilities = record['facilities'];
+    if (facilities is List) {
+      provider.addAll({
+        'ac': facilities.contains('AC'),
+        'wifi': facilities.contains('WiFi'),
+        'parking': facilities.contains('Parking'),
+      });
+    }
     return provider;
   }).toList();
 
@@ -560,92 +514,121 @@ class ConferenceSeedData {
           .toList();
     }
     return {
-      ..._common(record, 'food'),
+      ..._common(record),
       'packages': packages,
     };
   }).toList();
 
   static final List<Map<String, dynamic>> foodItems =
       ConferenceExpandedData.foodItems.map((item) {
-    return {
-      ...Map<String, dynamic>.from(item),
-      'image_url': _images['food'],
-    };
+    return Map<String, dynamic>.from(item);
   }).toList();
 
   static final List<Map<String, dynamic>> sounds =
       ConferenceExpandedData.sounds.map((record) {
     final packages = (record['packages'] as List?) ?? const [];
+    final packs = packages.map((raw) {
+      final item = Map<String, dynamic>.from(raw as Map);
+      final inclusions = item['includes'];
+      final name = switch (item['name']) {
+        'Normal' => 'Basic',
+        'Pro' => 'Standard',
+        'Pro Plus' => 'Premium',
+        _ => item['name'],
+      };
+      return {
+        ...item,
+        'name': name,
+        'details': inclusions is List ? inclusions.join(', ') : '',
+      };
+    }).toList();
     return {
-      ..._common(record, 'sound'),
-      'packs': packages.map((raw) {
-        final item = Map<String, dynamic>.from(raw as Map);
-        final inclusions = item['includes'];
-        return {
-          ...item,
-          'details': inclusions is List ? inclusions.join(', ') : '',
-        };
-      }).toList(),
+      ..._common(record),
+      'packages': packs,
+      'packs': packs,
     };
   }).toList();
 
   static final List<Map<String, dynamic>> decorations =
       ConferenceExpandedData.decorations.map((record) {
     final packages = (record['packages'] as List?) ?? const [];
+    final packs = packages.map((raw) {
+      final item = Map<String, dynamic>.from(raw as Map);
+      final inclusions = item['includes'];
+      return {
+        ...item,
+        'details': inclusions is List ? inclusions.join(', ') : '',
+      };
+    }).toList();
     return {
-      ..._common(record, 'decoration'),
-      'packs': packages.map((raw) {
-        final item = Map<String, dynamic>.from(raw as Map);
-        final inclusions = item['includes'];
-        return {
-          ...item,
-          'details': inclusions is List ? inclusions.join(', ') : '',
-        };
-      }).toList(),
+      ..._common(record),
+      'packages': packs,
+      'packs': packs,
     };
   }).toList();
 
   static final List<Map<String, dynamic>> photography =
       ConferenceExpandedData.photography.map((record) {
     final packages = (record['packages'] as List?) ?? const [];
+    final providerId = record['id'] as String;
+    final packs = packages.map((raw) {
+      final item = Map<String, dynamic>.from(raw as Map);
+      final name = switch (item['name']) {
+        'Pro' => 'Standard',
+        'Cinematic' => 'Premium',
+        _ => item['name'],
+      };
+      final cameraCount = item['camera_count'] is num
+          ? item['camera_count'] as num
+          : switch (name) {
+              'Basic' => 1,
+              'Standard' => 2,
+              'Premium' => 3,
+              _ => 1,
+            };
+      final isSampleCameraCount = item['camera_count'] is! num;
+      return {
+        ...item,
+        'name': name,
+        'camera_count': cameraCount,
+        'camera_count_is_sample': isSampleCameraCount,
+        'details':
+            '${item['hours'] ?? 0} hours · '
+            '${item['photographers'] ?? 0} photographers · '
+            '$cameraCount camera${cameraCount == 1 ? '' : 's'}'
+            '${isSampleCameraCount ? ' (sample estimate)' : ''} · '
+            '${item['videographers'] ?? 0} videographers · '
+            'Drone ${item['drone'] == true ? 'included' : 'not included'} · '
+            '${item['edited_photos'] ?? 0} edited photos · '
+            '${item['delivery_days'] ?? 0} day delivery',
+      };
+    }).toList();
     return {
-      ..._common(record, 'photography'),
-      'packs': packages.map((raw) {
-        final item = Map<String, dynamic>.from(raw as Map);
-        return {
-          ...item,
-          'details':
-              '${item['hours'] ?? 0} hours · '
-              '${item['photographers'] ?? 0} photographers · '
-              '${item['videographers'] ?? 0} videographers · '
-              'Drone ${item['drone'] == true ? 'included' : 'not included'} · '
-              '${item['edited_photos'] ?? 0} edited photos · '
-              '${item['delivery_days'] ?? 0} day delivery',
-        };
-      }).toList(),
+      ..._common(record),
+      'contact_phone': '+880 0000 000000',
+      'social_links': ['https://example.invalid/photographers/$providerId'],
+      'contact_is_sample': true,
+      'packages': packs,
+      'packs': packs,
     };
   }).toList();
 
   static final List<Map<String, dynamic>> transport =
       ConferenceExpandedData.transport.map((record) {
     return {
-      ..._common(record, 'transportation'),
+      ..._common(record),
       'cars': record['vehicles'],
     };
   }).toList();
 
-  static Map<String, dynamic> _common(
-    Map<dynamic, dynamic> source,
-    String category,
-  ) {
+  static Map<String, dynamic> _common(Map<dynamic, dynamic> source) {
     final record = Map<String, dynamic>.from(source);
     final city = (record['city'] ?? record['location'] ?? 'Dhaka').toString();
     return {
       ...record,
       'city': city,
       'location': city,
-      'image': record['image'] ?? record['image_url'] ?? _images[category],
-      'demo_notice': 'Demo listing; provider details are not verified.',
+      'image': record['image'] ?? record['image_url'] ?? '',
     };
   }
 }

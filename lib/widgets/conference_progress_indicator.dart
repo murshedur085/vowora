@@ -24,7 +24,7 @@ class ConferenceProgressIndicator extends StatelessWidget {
         Text(
           'Step ${currentIndex + 1} of ${labels.length}',
           style: const TextStyle(
-            color: Color(0xFF8A7A75),
+            color: Colors.black,
             fontSize: 12,
             fontWeight: FontWeight.w600,
           ),
@@ -61,15 +61,11 @@ class ConferenceProgressIndicator extends StatelessWidget {
     final isSkipped = skippedCategories.contains(category);
     final isCurrent = currentIndex == index;
     final color = isCurrent
-        ? const Color(0xFF3E2C26)
+        ? const Color(0xFFE9DED5)
         : isBooked
         ? const Color(0xFFE7F1E9)
         : const Color(0xFFFFFFFF);
-    final foreground = isCurrent
-        ? Colors.white
-        : isBooked
-        ? const Color(0xFF39734A)
-        : const Color(0xFF3E2C26);
+    const foreground = Colors.black;
 
     return Tooltip(
       message: label,
@@ -83,7 +79,7 @@ class ConferenceProgressIndicator extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: isCurrent
-                  ? const Color(0xFF3E2C26)
+                  ? const Color(0xFFE9DED5)
                   : const Color(0xFFE9DED5),
             ),
           ),
