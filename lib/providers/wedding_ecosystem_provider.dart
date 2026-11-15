@@ -103,7 +103,7 @@ class WeddingEcosystemProvider extends ChangeNotifier {
   void _initEcosystemData() {
     // 1. Initial Clean Zero-Event State for New User
     _activeWedding = WeddingBookingModel(
-      weddingId: 'WED-8F42K9',
+      weddingId: '',
       brideName: '',
       groomName: '',
       bridePhone: '',
@@ -488,7 +488,7 @@ class WeddingEcosystemProvider extends ChangeNotifier {
     _activeRole = UserRole.client;
 
     _activeWedding = WeddingBookingModel(
-      weddingId: '',
+      weddingId: 'WED-${(100000 + (DateTime.now().millisecondsSinceEpoch % 899999)).toString()}',
       brideName: '',
       groomName: '',
       bridePhone: '',
@@ -510,6 +510,11 @@ class WeddingEcosystemProvider extends ChangeNotifier {
     _guestNotifications = [];
     _providerNotifications = [];
 
+    notifyListeners();
+  }
+
+  void setActiveWedding(WeddingBookingModel booking) {
+    _activeWedding = booking;
     notifyListeners();
   }
 

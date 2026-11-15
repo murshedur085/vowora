@@ -17,15 +17,25 @@ class GoogleDrivePhotoItem {
     required this.createdTime,
   });
 
-  factory GoogleDrivePhotoItem.fromJson(Map<String, dynamic> json) {
+  factory GoogleDrivePhotoItem.fromJson(Map<String, dynamic> json, {String? apiKey}) {
     final id = json['id'] as String? ?? '';
     final name = json['name'] as String? ?? 'Wedding Photo';
     
-    // Google Drive direct thumbnail & view links
-    final thumbnail = json['thumbnailLink'] as String? ?? 
-        'https://drive.google.com/thumbnail?id=$id&sz=w400';
-    final highRes = json['webContentLink'] as String? ?? 
-        'https://drive.google.com/uc?export=view&id=$id';
+    String thumbnail;
+    String highRes;
+
+    if (apiKey != null && apiKey.trim().isNotEmpty && id.isNotEmpty) {
+      // Direct media download endpoint using official Google Drive API v3 Key
+      thumbnail = 'https://www.googleapis.com/drive/v3/files/$id?alt=media&key=${apiKey.trim()}';
+      highRes = 'https://www.googleapis.com/drive/v3/files/$id?alt=media&key=${apiKey.trim()}';
+    } else if (id.isNotEmpty) {
+      // Direct public CDN endpoint
+      thumbnail = 'https://lh3.googleusercontent.com/d/$id';
+      highRes = 'https://lh3.googleusercontent.com/d/$id';
+    } else {
+      thumbnail = json['thumbnailLink'] as String? ?? '';
+      highRes = json['webContentLink'] as String? ?? '';
+    }
 
     return GoogleDrivePhotoItem(
       id: id,
@@ -90,7 +100,7 @@ class GoogleDriveService {
           final files = (data['files'] as List<dynamic>?) ?? [];
           if (files.isNotEmpty) {
             return files
-                .map((f) => GoogleDrivePhotoItem.fromJson(f as Map<String, dynamic>))
+                .map((f) => GoogleDrivePhotoItem.fromJson(f as Map<String, dynamic>, apiKey: apiKey))
                 .toList();
           }
         }
@@ -100,54 +110,52 @@ class GoogleDriveService {
     }
 
     // Fallback / Demo high-resolution wedding photos representing the linked folder
-    // Ensures reliable offline/online operation and stunning wedding gallery display.
-    await Future.delayed(const Duration(milliseconds: 600)); // Simulate network load
+    await Future.delayed(const Duration(milliseconds: 300));
     return _getFallbackWeddingPhotos(cleanFolderId);
   }
 
   static List<GoogleDrivePhotoItem> _getFallbackWeddingPhotos(String folderId) {
-    // Generate deterministic sample items based on folderId hash
     return [
       GoogleDrivePhotoItem(
         id: '${folderId}_1',
         name: 'Bridal Entrance & Floral Arch',
-        thumbnailUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=500',
-        highResUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1600',
+        thumbnailUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80',
+        highResUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1600&q=80',
         createdTime: DateTime.now().subtract(const Duration(hours: 5)),
       ),
       GoogleDrivePhotoItem(
         id: '${folderId}_2',
         name: 'Couple Portrait at Sunset',
-        thumbnailUrl: 'https://images.unsplash.com/photo-1606800052052-a08af7148866?w=500',
-        highResUrl: 'https://images.unsplash.com/photo-1606800052052-a08af7148866?w=1600',
+        thumbnailUrl: 'https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=800&q=80',
+        highResUrl: 'https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=1600&q=80',
         createdTime: DateTime.now().subtract(const Duration(hours: 4)),
       ),
       GoogleDrivePhotoItem(
         id: '${folderId}_3',
         name: 'Ring Exchange Ceremony',
-        thumbnailUrl: 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=500',
-        highResUrl: 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=1600',
+        thumbnailUrl: 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=800&q=80',
+        highResUrl: 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=1600&q=80',
         createdTime: DateTime.now().subtract(const Duration(hours: 3)),
       ),
       GoogleDrivePhotoItem(
         id: '${folderId}_4',
         name: 'First Dance Moments',
-        thumbnailUrl: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=500',
-        highResUrl: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=1600',
+        thumbnailUrl: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=800&q=80',
+        highResUrl: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=1600&q=80',
         createdTime: DateTime.now().subtract(const Duration(hours: 2)),
       ),
       GoogleDrivePhotoItem(
         id: '${folderId}_5',
         name: 'Family & Group Celebration',
-        thumbnailUrl: 'https://images.unsplash.com/photo-1537633552985-df8429e8048b?w=500',
-        highResUrl: 'https://images.unsplash.com/photo-1537633552985-df8429e8048b?w=1600',
+        thumbnailUrl: 'https://images.unsplash.com/photo-1537633552985-df8429e8048b?auto=format&fit=crop&w=800&q=80',
+        highResUrl: 'https://images.unsplash.com/photo-1537633552985-df8429e8048b?auto=format&fit=crop&w=1600&q=80',
         createdTime: DateTime.now().subtract(const Duration(hours: 1)),
       ),
       GoogleDrivePhotoItem(
         id: '${folderId}_6',
         name: 'Candid Wedding Details',
-        thumbnailUrl: 'https://images.unsplash.com/photo-1520854221256-17451cc331bf?w=500',
-        highResUrl: 'https://images.unsplash.com/photo-1520854221256-17451cc331bf?w=1600',
+        thumbnailUrl: 'https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=800&q=80',
+        highResUrl: 'https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=1600&q=80',
         createdTime: DateTime.now(),
       ),
     ];

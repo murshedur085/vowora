@@ -420,14 +420,16 @@ class SupabaseDatabaseService {
     String? userId,
   }) async {
     if (!isReady || eventId.trim().isEmpty) return;
+    final effectiveEventId = eventId.trim();
     try {
       final effectiveUserId = userId ?? SupabaseService.currentUser?.id ?? 'active_user';
       
       // Ensure parent wedding profile exists
-      final checkWedding = await fetchWeddingById(eventId);
+      final checkWedding = await fetchWeddingById(effectiveEventId);
       if (checkWedding == null) {
         await SupabaseService.client.from('wedding_profiles').upsert({
-          'id': eventId.trim(),
+          'id': effectiveEventId,
+          'user_id': effectiveUserId,
           'bride_name': 'Wedding Bride',
           'groom_name': 'Wedding Groom',
           'wedding_date': DateTime.now().add(const Duration(days: 90)).toIso8601String(),
@@ -440,26 +442,29 @@ class SupabaseDatabaseService {
       }
 
       await SupabaseService.client.from('wedding_photo_folders').upsert({
-        'id': 'folder_$eventId',
-        'event_id': eventId.trim(),
+        'id': 'folder_$effectiveEventId',
+        'event_id': effectiveEventId,
         'google_drive_folder_id': folderId.trim(),
         'google_drive_folder_url': folderUrl.trim(),
+        'google_drive_api_key': apiKey != null && apiKey.trim().isNotEmpty ? apiKey.trim() : null,
         'created_by': effectiveUserId,
         'updated_at': DateTime.now().toIso8601String(),
       });
-      if (kDebugMode) debugPrint('✅ Wedding photo folder upserted for event: $eventId');
+      if (kDebugMode) debugPrint('✅ Wedding photo folder upserted for event: $effectiveEventId');
     } catch (e) {
       if (kDebugMode) debugPrint('❌ Error upserting wedding photo folder: $e');
+      rethrow;
     }
   }
 
   static Future<Map<String, dynamic>?> fetchWeddingPhotoFolder(String eventId) async {
     if (!isReady || eventId.trim().isEmpty) return null;
+    final effectiveEventId = eventId.trim();
     try {
       final response = await SupabaseService.client
           .from('wedding_photo_folders')
           .select()
-          .eq('event_id', eventId.trim())
+          .eq('event_id', effectiveEventId)
           .maybeSingle();
       return response;
     } catch (e) {
@@ -470,12 +475,13 @@ class SupabaseDatabaseService {
 
   static Future<void> deleteWeddingPhotoFolder(String eventId) async {
     if (!isReady || eventId.trim().isEmpty) return;
+    final effectiveEventId = eventId.trim();
     try {
       await SupabaseService.client
           .from('wedding_photo_folders')
           .delete()
-          .eq('event_id', eventId.trim());
-      if (kDebugMode) debugPrint('✅ Wedding photo folder deleted for event: $eventId');
+          .eq('event_id', effectiveEventId);
+      if (kDebugMode) debugPrint('✅ Wedding photo folder deleted for event: $effectiveEventId');
     } catch (e) {
       if (kDebugMode) debugPrint('❌ Error deleting wedding photo folder: $e');
     }

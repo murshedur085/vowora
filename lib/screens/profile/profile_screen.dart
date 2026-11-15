@@ -32,8 +32,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       final wizardProvider = Provider.of<WeddingWizardProvider>(context, listen: false);
+      final ecoProvider = Provider.of<WeddingEcosystemProvider>(context, listen: false);
       if (authProvider.isAuthenticated && authProvider.userProfile != null) {
-        wizardProvider.loadUserWeddingFromSupabase(authProvider.userProfile!.id);
+        wizardProvider.loadUserWeddingFromSupabase(authProvider.userProfile!.id, ecoProvider: ecoProvider);
       }
     });
   }

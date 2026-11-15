@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../core/services/supabase_database_service.dart';
@@ -301,14 +302,18 @@ class WeddingWizardProvider extends ChangeNotifier {
   }
 
   // --- Fetch User Saved Wedding Event From Supabase Database ---
-  Future<void> loadUserWeddingFromSupabase(String? userId) async {
-    if (userId == null || userId.isEmpty) return;
+  Future<void> loadUserWeddingFromSupabase(String? userId, {dynamic ecoProvider}) async {
+    if (userId == null || userId.isEmpty) {
+      resetForNewUser();
+      if (ecoProvider != null) ecoProvider.clearSessionData();
+      return;
+    }
     if (!SupabaseDatabaseService.isReady) return;
 
     try {
       final data = await SupabaseDatabaseService.fetchUserWedding(userId);
       if (data != null && data.isNotEmpty) {
-        final weddingId = data['id'] ?? 'WED-2026-0001';
+        final weddingId = data['id'] ?? 'WED-${(100000 + Random().nextInt(899999)).toString()}';
 
         // Fetch guests for this wedding from Supabase guests table
         final guestRows = await SupabaseDatabaseService.fetchGuestsByWeddingId(weddingId);
@@ -404,8 +409,10 @@ class WeddingWizardProvider extends ChangeNotifier {
   // --- Start New Booking Creation Wizard ---
   void startNewBookingWizard() {
     _currentStep = 1;
+    final randomDigits = (100000 + Random().nextInt(899999)).toString();
+    final freshEventId = 'WED-$randomDigits';
     _booking = WeddingBookingModel(
-      weddingId: 'WED-2026-${(1000 + (DateTime.now().millisecondsSinceEpoch % 8999)).toString()}',
+      weddingId: freshEventId,
       brideName: '',
       groomName: '',
       bridePhone: '',
@@ -731,7 +738,10 @@ class WeddingWizardProvider extends ChangeNotifier {
   // --- Step 14 & 15: Final Confirmation ---
   void confirmWeddingBooking({String? userId}) {
     _booking.isConfirmed = true;
-    _booking.weddingId = 'WED-2026-${(1000 + (DateTime.now().millisecondsSinceEpoch % 8999)).toString()}';
+    if (_booking.weddingId.trim().isEmpty) {
+      final randomDigits = (100000 + Random().nextInt(899999)).toString();
+      _booking.weddingId = 'WED-$randomDigits';
+    }
     _currentStep = 14; // Confirmation screen step
 
     // Sync to Supabase Database

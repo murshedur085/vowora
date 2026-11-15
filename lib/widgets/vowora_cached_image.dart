@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import '../core/theme/vowora_theme.dart';
 
 enum ImageContextSize { thumbnail, card, hero, full }
 
@@ -30,42 +30,11 @@ class VoworaCachedImage extends StatelessWidget {
     this.isAssetFallback = false,
   });
 
-  int? get _memCacheWidth {
-    switch (contextSize) {
-      case ImageContextSize.thumbnail:
-        return 240;
-      case ImageContextSize.card:
-        return 600;
-      case ImageContextSize.hero:
-        return 900;
-      case ImageContextSize.full:
-        return null;
-    }
-  }
-
-  int? get _memCacheHeight {
-    switch (contextSize) {
-      case ImageContextSize.thumbnail:
-        return 240;
-      case ImageContextSize.card:
-        return 600;
-      case ImageContextSize.hero:
-        return 900;
-      case ImageContextSize.full:
-        return null;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final cleanUrl = imageUrl.trim();
 
     Widget content;
-    bool isTest = false;
-    assert(() {
-      isTest = true;
-      return true;
-    }());
 
     if (cleanUrl.isEmpty) {
       content = _buildErrorWidget(context);
@@ -79,27 +48,36 @@ class VoworaCachedImage extends StatelessWidget {
       );
     } else if (!cleanUrl.startsWith('http')) {
       content = _buildErrorWidget(context);
-    } else if (isTest) {
+    } else if (kIsWeb) {
+      // Direct native browser image rendering on Web to avoid XHR CORS restrictions
       content = Image.network(
         cleanUrl,
         width: width,
         height: height,
         fit: fit,
-        errorBuilder: (c, e, s) => _buildErrorWidget(context),
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return placeholder ?? _buildSkeletonPlaceholder(context);
+        },
+        errorBuilder: (c, e, s) => errorWidget ?? _buildErrorWidget(context),
       );
     } else {
+      // Mobile / Desktop cached network rendering
       content = CachedNetworkImage(
         imageUrl: cleanUrl,
         cacheKey: cacheKey,
         width: width,
         height: height,
         fit: fit,
-        memCacheWidth: _memCacheWidth,
-        memCacheHeight: _memCacheHeight,
-        fadeInDuration: Duration.zero,
-        fadeOutDuration: Duration.zero,
+        fadeInDuration: const Duration(milliseconds: 200),
         placeholder: (context, url) => placeholder ?? _buildSkeletonPlaceholder(context),
-        errorWidget: (context, url, error) => errorWidget ?? _buildErrorWidget(context),
+        errorWidget: (context, url, error) => Image.network(
+          cleanUrl,
+          width: width,
+          height: height,
+          fit: fit,
+          errorBuilder: (c, e, s) => errorWidget ?? _buildErrorWidget(context),
+        ),
       );
     }
 
@@ -118,18 +96,16 @@ class VoworaCachedImage extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: VoworaColors.darkCardBackground.withValues(alpha: 0.6),
+        color: const Color(0xFFF4EFE5),
         borderRadius: borderRadius,
       ),
-      child: Center(
+      child: const Center(
         child: SizedBox(
           width: 20,
           height: 20,
           child: CircularProgressIndicator(
             strokeWidth: 2,
-            valueColor: AlwaysStoppedAnimation<Color>(
-              VoworaColors.champagneGold.withValues(alpha: 0.5),
-            ),
+            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFB89B5E)),
           ),
         ),
       ),
@@ -141,15 +117,15 @@ class VoworaCachedImage extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: const Color(0xFF26211D),
+        color: const Color(0xFFF4EFE5),
         borderRadius: borderRadius,
-        border: Border.all(color: VoworaColors.champagneGold.withValues(alpha: 0.3)),
+        border: Border.all(color: const Color(0xFFEAE7E1)),
       ),
       child: const Center(
         child: Icon(
           Icons.photo_rounded,
-          color: VoworaColors.champagneGold,
-          size: 32,
+          color: Color(0xFFB89B5E),
+          size: 28,
         ),
       ),
     );

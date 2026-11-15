@@ -7,6 +7,7 @@ import '../../core/services/supabase_database_service.dart';
 import '../../core/theme/vowora_theme.dart';
 import '../../models/wedding_ecosystem_models.dart';
 import '../../providers/wedding_ecosystem_provider.dart';
+import '../../providers/wedding_wizard_provider.dart';
 import '../../routes/app_routes.dart';
 import '../../widgets/vowora_cached_image.dart';
 
@@ -46,6 +47,19 @@ class _WeddingPhotographyGalleryScreenState
     super.dispose();
   }
 
+  String _getEffectiveWeddingId(WeddingEcosystemProvider ecoProvider, WeddingWizardProvider wizardProvider) {
+    if (ecoProvider.joinedGuestWedding != null && ecoProvider.joinedGuestWedding!.weddingId.trim().isNotEmpty) {
+      return ecoProvider.joinedGuestWedding!.weddingId.trim();
+    }
+    if (wizardProvider.booking.weddingId.trim().isNotEmpty) {
+      return wizardProvider.booking.weddingId.trim();
+    }
+    if (ecoProvider.activeWedding.weddingId.trim().isNotEmpty) {
+      return ecoProvider.activeWedding.weddingId.trim();
+    }
+    return '';
+  }
+
   Future<void> _loadEventFolderAndPhotos() async {
     setState(() {
       _isLoading = true;
@@ -54,43 +68,70 @@ class _WeddingPhotographyGalleryScreenState
 
     try {
       final provider = Provider.of<WeddingEcosystemProvider>(context, listen: false);
-      final weddingId = provider.joinedGuestWedding?.weddingId ?? provider.activeWedding.weddingId;
+      final wizardProvider = Provider.of<WeddingWizardProvider>(context, listen: false);
+      final weddingId = _getEffectiveWeddingId(provider, wizardProvider);
 
-      // 1. Load from local SharedPreferences (event-specific + global device fallback across logouts)
+      if (weddingId.isEmpty) {
+        // If no active event or booking, do not query shared fallback IDs
+        setState(() {
+          _isLoading = false;
+          _drivePhotos = [];
+        });
+        return;
+      }
+
       final prefs = await SharedPreferences.getInstance();
-      _folderUrl = prefs.getString('drive_folder_url_$weddingId') ?? prefs.getString('global_drive_folder_url');
-      _folderId = prefs.getString('drive_folder_id_$weddingId') ?? prefs.getString('global_drive_folder_id');
-      _apiKey = prefs.getString('drive_api_key_$weddingId') ?? prefs.getString('global_drive_api_key');
 
-      // 2. Also try fetching from Supabase
+      // Supabase is the primary Single Source of Truth
       final folderData = await SupabaseDatabaseService.fetchWeddingPhotoFolder(weddingId);
-      if (folderData != null) {
-        _folderUrl = folderData['google_drive_folder_url'] as String? ?? _folderUrl;
-        _folderId = folderData['google_drive_folder_id'] as String? ?? _folderId;
-      }
+      
+      if (folderData != null && (folderData['google_drive_folder_url'] as String? ?? '').isNotEmpty) {
+        _folderUrl = folderData['google_drive_folder_url'] as String?;
+        _folderId = folderData['google_drive_folder_id'] as String?;
+        _apiKey = folderData['google_drive_api_key'] as String?;
 
-      // Sync back to both local and global preferences
-      if (_folderUrl != null) {
-        prefs.setString('drive_folder_url_$weddingId', _folderUrl!);
-        prefs.setString('global_drive_folder_url', _folderUrl!);
-        _folderUrlCtrl.text = _folderUrl!;
-      }
-      if (_folderId != null) {
-        prefs.setString('drive_folder_id_$weddingId', _folderId!);
-        prefs.setString('global_drive_folder_id', _folderId!);
-      }
-      if (_apiKey != null) {
-        prefs.setString('drive_api_key_$weddingId', _apiKey!);
-        prefs.setString('global_drive_api_key', _apiKey!);
-        _apiKeyCtrl.text = _apiKey!;
+        if (_folderUrl != null) {
+          await prefs.setString('drive_folder_url_$weddingId', _folderUrl!);
+          _folderUrlCtrl.text = _folderUrl!;
+        }
+        if (_folderId != null) {
+          await prefs.setString('drive_folder_id_$weddingId', _folderId!);
+        }
+        if (_apiKey != null) {
+          await prefs.setString('drive_api_key_$weddingId', _apiKey!);
+          _apiKeyCtrl.text = _apiKey!;
+        } else {
+          await prefs.remove('drive_api_key_$weddingId');
+          _apiKeyCtrl.clear();
+        }
+      } else {
+        // If deleted or not present in Supabase, check local cache or clear completely
+        _folderUrl = prefs.getString('drive_folder_url_$weddingId');
+        _folderId = prefs.getString('drive_folder_id_$weddingId');
+        _apiKey = prefs.getString('drive_api_key_$weddingId');
+
+        // If Supabase gave null (e.g. deleted on Supabase), purge local cache to stay synced!
+        if (folderData == null) {
+          _folderUrl = null;
+          _folderId = null;
+          _apiKey = null;
+          _folderUrlCtrl.clear();
+          _apiKeyCtrl.clear();
+          await prefs.remove('drive_folder_url_$weddingId');
+          await prefs.remove('drive_folder_id_$weddingId');
+          await prefs.remove('drive_api_key_$weddingId');
+        } else {
+          if (_folderUrl != null) _folderUrlCtrl.text = _folderUrl!;
+          if (_apiKey != null) _apiKeyCtrl.text = _apiKey!;
+        }
       }
 
       if (_folderId != null && _folderId!.isNotEmpty) {
-        // Load photos from Google Drive folder with optional API key
+        // Load photos from this event's specific Google Drive folder
         _drivePhotos = await GoogleDriveService.fetchFolderPhotos(_folderId!, apiKey: _apiKey);
       } else {
-        // Default demo folder if none configured yet
-        _drivePhotos = await GoogleDriveService.fetchFolderPhotos('wedding_default_folder_123', apiKey: _apiKey);
+        // Unconfigured event starts completely empty (strict event isolation)
+        _drivePhotos = [];
       }
 
       if (mounted && _drivePhotos.isNotEmpty) {
@@ -128,24 +169,26 @@ class _WeddingPhotographyGalleryScreenState
 
     try {
       final provider = Provider.of<WeddingEcosystemProvider>(context, listen: false);
-      final weddingId = provider.joinedGuestWedding?.weddingId ?? provider.activeWedding.weddingId;
+      final wizardProvider = Provider.of<WeddingWizardProvider>(context, listen: false);
+      var weddingId = _getEffectiveWeddingId(provider, wizardProvider);
 
-      // 1. Save locally to event-specific & global device SharedPreferences permanently
+      if (weddingId.isEmpty) {
+        weddingId = 'WED-${DateTime.now().millisecondsSinceEpoch % 1000000}';
+        wizardProvider.booking.weddingId = weddingId;
+      }
+
+      // 1. Save strictly to event-specific SharedPreferences permanently
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('drive_folder_url_$weddingId', input);
       await prefs.setString('drive_folder_id_$weddingId', extractedId);
-      await prefs.setString('global_drive_folder_url', input);
-      await prefs.setString('global_drive_folder_id', extractedId);
 
       if (apiKeyInput.isNotEmpty) {
         await prefs.setString('drive_api_key_$weddingId', apiKeyInput);
-        await prefs.setString('global_drive_api_key', apiKeyInput);
       } else {
         await prefs.remove('drive_api_key_$weddingId');
-        await prefs.remove('global_drive_api_key');
       }
 
-      // 2. Save to Supabase
+      // 2. Save to Supabase (isolated by event_id = weddingId)
       await SupabaseDatabaseService.upsertWeddingPhotoFolder(
         eventId: weddingId,
         folderUrl: input,
@@ -160,7 +203,7 @@ class _WeddingPhotographyGalleryScreenState
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('✨ Google Drive folder linked & remembered globally!')),
+          const SnackBar(content: Text('✨ Google Drive folder & API key saved strictly for this event!')),
         );
         Navigator.pop(context); // Close setup modal
       }
@@ -179,16 +222,18 @@ class _WeddingPhotographyGalleryScreenState
     setState(() => _isLoading = true);
     try {
       final provider = Provider.of<WeddingEcosystemProvider>(context, listen: false);
-      final weddingId = provider.joinedGuestWedding?.weddingId ?? provider.activeWedding.weddingId;
+      final wizardProvider = Provider.of<WeddingWizardProvider>(context, listen: false);
+      final weddingId = _getEffectiveWeddingId(provider, wizardProvider);
 
-      // 1. Remove from local preferences (event & global)
+      if (weddingId.isEmpty) {
+        return;
+      }
+
+      // 1. Remove strictly from event-specific preferences
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('drive_folder_url_$weddingId');
       await prefs.remove('drive_folder_id_$weddingId');
       await prefs.remove('drive_api_key_$weddingId');
-      await prefs.remove('global_drive_folder_url');
-      await prefs.remove('global_drive_folder_id');
-      await prefs.remove('global_drive_api_key');
 
       // 2. Remove from Supabase
       await SupabaseDatabaseService.deleteWeddingPhotoFolder(weddingId);
@@ -198,7 +243,7 @@ class _WeddingPhotographyGalleryScreenState
       _apiKey = null;
       _folderUrlCtrl.clear();
       _apiKeyCtrl.clear();
-      _drivePhotos = await GoogleDriveService.fetchFolderPhotos('default_empty');
+      _drivePhotos = [];
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -510,8 +555,9 @@ class _WeddingPhotographyGalleryScreenState
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<WeddingEcosystemProvider>(context);
+    final wizardProvider = Provider.of<WeddingWizardProvider>(context, listen: false);
     final isClient = provider.activeRole == UserRole.client;
-    final weddingId = provider.joinedGuestWedding?.weddingId ?? provider.activeWedding.weddingId;
+    final weddingId = _getEffectiveWeddingId(provider, wizardProvider);
 
     return DefaultTabController(
       length: 2,

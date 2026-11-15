@@ -1536,35 +1536,52 @@ class _MainWeddingDashboardViewState extends State<MainWeddingDashboardView> {
   void _showEditDecorationModal(BuildContext context, WeddingWizardProvider provider) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       backgroundColor: const Color(0xFF181513),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) {
         return Padding(
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+            top: 20,
+            left: 20,
+            right: 20,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Edit Decoration Themes', style: GoogleFonts.playfairDisplay(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
               const SizedBox(height: 12),
-              ListView.builder(
-                shrinkWrap: true,
-                itemCount: provider.decorations.length,
-                itemBuilder: (context, index) {
-                  final d = provider.decorations[index];
-                  final isSel = provider.booking.selectedDecorations.any((item) => item.id == d.id);
-                  return CheckboxListTile(
-                    title: Text(d.name, style: GoogleFonts.playfairDisplay(color: Colors.white, fontWeight: FontWeight.bold)),
-                    subtitle: Text('৳${(d.price / 1000).toStringAsFixed(0)}k • ${d.category}', style: GoogleFonts.plusJakartaSans(color: Colors.white70, fontSize: 11)),
-                    value: isSel,
-                    activeColor: VoworaColors.champagneGold,
-                    onChanged: (val) {
-                      provider.toggleDecoration(d);
-                    },
-                  );
-                },
+              SizedBox(
+                height: 320,
+                child: ListView.builder(
+                  itemCount: provider.decorations.length,
+                  itemBuilder: (context, index) {
+                    final d = provider.decorations[index];
+                    final isSel = provider.booking.selectedDecorations.any((item) => item.id == d.id);
+                    return CheckboxListTile(
+                      title: Text(d.name, style: GoogleFonts.playfairDisplay(color: Colors.white, fontWeight: FontWeight.bold)),
+                      subtitle: Text('৳${(d.price / 1000).toStringAsFixed(0)}k • ${d.category}', style: GoogleFonts.plusJakartaSans(color: Colors.white70, fontSize: 11)),
+                      value: isSel,
+                      activeColor: VoworaColors.champagneGold,
+                      onChanged: (val) {
+                        provider.toggleDecoration(d);
+                      },
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: ElevatedButton.styleFrom(backgroundColor: VoworaColors.champagneGold, foregroundColor: Colors.black),
+                  child: const Text('Done'),
+                ),
               ),
             ],
           ),
@@ -1853,14 +1870,20 @@ class _MainWeddingDashboardViewState extends State<MainWeddingDashboardView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Photography & Media (${mediaServices.length} Booked)', style: GoogleFonts.playfairDisplay(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                      Expanded(
+                        child: Text(
+                          'Photography & Media (${mediaServices.length} Booked)',
+                          style: GoogleFonts.playfairDisplay(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
                       ElevatedButton.icon(
                         onPressed: () => _showAddMediaServiceDialog(context, provider, setModalState),
                         style: ElevatedButton.styleFrom(backgroundColor: VoworaColors.champagneGold, foregroundColor: Colors.black, visualDensity: VisualDensity.compact),
                         icon: const Icon(Icons.add, size: 16),
-                        label: const Text('Add Service'),
+                        label: const Text('Add'),
                       ),
                     ],
                   ),
@@ -2003,35 +2026,52 @@ class _MainWeddingDashboardViewState extends State<MainWeddingDashboardView> {
   void _showEditEntertainmentModal(BuildContext context, WeddingWizardProvider provider) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       backgroundColor: const Color(0xFF181513),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) {
         return Padding(
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+            top: 20,
+            left: 20,
+            right: 20,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Edit Entertainment Options', style: GoogleFonts.playfairDisplay(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
               const SizedBox(height: 12),
-              ListView.builder(
-                shrinkWrap: true,
-                itemCount: provider.entertainmentOptions.length,
-                itemBuilder: (context, index) {
-                  final e = provider.entertainmentOptions[index];
-                  final isSel = provider.booking.selectedEntertainment.any((item) => item.id == e.id);
-                  return CheckboxListTile(
-                    title: Text(e.name, style: GoogleFonts.playfairDisplay(color: Colors.white, fontWeight: FontWeight.bold)),
-                    subtitle: Text('৳${(e.price / 1000).toStringAsFixed(0)}k • ${e.category}', style: GoogleFonts.plusJakartaSans(color: Colors.white70, fontSize: 11)),
-                    value: isSel,
-                    activeColor: VoworaColors.champagneGold,
-                    onChanged: (val) {
-                      provider.toggleEntertainmentOption(e);
-                    },
-                  );
-                },
+              SizedBox(
+                height: 320,
+                child: ListView.builder(
+                  itemCount: provider.entertainmentOptions.length,
+                  itemBuilder: (context, index) {
+                    final e = provider.entertainmentOptions[index];
+                    final isSel = provider.booking.selectedEntertainment.any((item) => item.id == e.id);
+                    return CheckboxListTile(
+                      title: Text(e.name, style: GoogleFonts.playfairDisplay(color: Colors.white, fontWeight: FontWeight.bold)),
+                      subtitle: Text('৳${(e.price / 1000).toStringAsFixed(0)}k • ${e.category}', style: GoogleFonts.plusJakartaSans(color: Colors.white70, fontSize: 11)),
+                      value: isSel,
+                      activeColor: VoworaColors.champagneGold,
+                      onChanged: (val) {
+                        provider.toggleEntertainmentOption(e);
+                      },
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: ElevatedButton.styleFrom(backgroundColor: VoworaColors.champagneGold, foregroundColor: Colors.black),
+                  child: const Text('Done'),
+                ),
               ),
             ],
           ),
@@ -2118,14 +2158,20 @@ class _MainWeddingDashboardViewState extends State<MainWeddingDashboardView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Checklist Tasks ($completedCount / ${tasks.length} Completed)', style: GoogleFonts.playfairDisplay(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                      Expanded(
+                        child: Text(
+                          'Checklist Tasks ($completedCount / ${tasks.length} Completed)',
+                          style: GoogleFonts.playfairDisplay(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
                       ElevatedButton.icon(
                         onPressed: () => _showAddTaskDialog(context, provider, setModalState),
                         style: ElevatedButton.styleFrom(backgroundColor: VoworaColors.champagneGold, foregroundColor: Colors.black, visualDensity: VisualDensity.compact),
                         icon: const Icon(Icons.add, size: 16),
-                        label: const Text('Add Task'),
+                        label: const Text('Add'),
                       ),
                     ],
                   ),

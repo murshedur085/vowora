@@ -6,6 +6,8 @@ import '../../core/constants/vowora_constants.dart';
 import '../../core/theme/vowora_theme.dart';
 import '../../core/utils/vowora_validators.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/wedding_wizard_provider.dart';
+import '../../providers/wedding_ecosystem_provider.dart';
 import '../../routes/app_routes.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/support_card.dart';
@@ -70,6 +72,9 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate() || _isNavigating) return;
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final wizardProvider = Provider.of<WeddingWizardProvider>(context, listen: false);
+    final ecoProvider = Provider.of<WeddingEcosystemProvider>(context, listen: false);
+
     final success = await authProvider.login(
       email: _emailController.text.trim(),
       password: _passwordController.text,
@@ -83,6 +88,12 @@ class _LoginScreenState extends State<LoginScreen> {
     } else if (success && authProvider.isAuthenticated) {
       _isNavigating = true;
       authProvider.removeListener(_onAuthChanged);
+      wizardProvider.resetForNewUser();
+      ecoProvider.clearSessionData();
+      if (authProvider.userProfile != null) {
+        await wizardProvider.loadUserWeddingFromSupabase(authProvider.userProfile!.id, ecoProvider: ecoProvider);
+      }
+      if (!mounted) return;
       Navigator.pushReplacementNamed(context, AppRoutes.home);
     } else if (!success) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -97,10 +108,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _handleOAuthLogin(OAuthProvider provider) async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final wizardProvider = Provider.of<WeddingWizardProvider>(context, listen: false);
+    final ecoProvider = Provider.of<WeddingEcosystemProvider>(context, listen: false);
     try {
       await authProvider.loginWithOAuth(provider);
       if (!mounted) return;
       if (authProvider.isAuthenticated) {
+        wizardProvider.resetForNewUser();
+        ecoProvider.clearSessionData();
+        if (authProvider.userProfile != null) {
+          await wizardProvider.loadUserWeddingFromSupabase(authProvider.userProfile!.id, ecoProvider: ecoProvider);
+        }
+        if (!mounted) return;
         Navigator.pushReplacementNamed(context, AppRoutes.home);
       }
     } catch (e) {

@@ -281,7 +281,7 @@ class PaymentRecordModel {
 
   PaymentRecordModel({
     required this.id,
-    this.weddingId = 'WED-2026-0001',
+    this.weddingId = '',
     required this.date,
     required this.serviceName,
     required this.amount,
@@ -315,7 +315,7 @@ class WeddingNotificationModel {
 
 // --- Main Complete Booking Entity ---
 class WeddingBookingModel {
-  String weddingId; // WED-2026-0001
+  String weddingId;
   
   // Couple
   String brideName;
@@ -355,7 +355,7 @@ class WeddingBookingModel {
   bool isConfirmed;
 
   WeddingBookingModel({
-    this.weddingId = 'WED-2026-0001',
+    String? weddingId,
     this.brideName = 'Ariesha Rahman',
     this.groomName = 'Tariq Hassan',
     this.bridePhone = '+880 1711223344',
@@ -382,7 +382,10 @@ class WeddingBookingModel {
     this.invitationTheme = InvitationTheme.luxuryGold,
     this.fontStyle = 'Playfair Display',
     this.isConfirmed = false,
-  })  : weddingDate = weddingDate ?? DateTime.now().add(const Duration(days: 120)),
+  })  : weddingId = (weddingId != null && weddingId.trim().isNotEmpty)
+            ? weddingId.trim()
+            : '',
+        weddingDate = weddingDate ?? DateTime.now().add(const Duration(days: 120)),
         selectedDecorations = selectedDecorations ?? [],
         guestsList = guestsList ?? [],
         selectedMediaServices = selectedMediaServices ?? [],

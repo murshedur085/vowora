@@ -8,6 +8,7 @@ import '../../models/wedding_booking_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/birthday_provider.dart';
 import '../../providers/wedding_wizard_provider.dart';
+import '../../providers/wedding_ecosystem_provider.dart';
 import '../../routes/app_routes.dart';
 import '../../services/conference_booking_service.dart';
 
@@ -28,8 +29,9 @@ class _MyEventsScreenState extends State<MyEventsScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       final wizardProvider = Provider.of<WeddingWizardProvider>(context, listen: false);
+      final ecoProvider = Provider.of<WeddingEcosystemProvider>(context, listen: false);
       if (authProvider.isAuthenticated && authProvider.userProfile != null) {
-        wizardProvider.loadUserWeddingFromSupabase(authProvider.userProfile!.id);
+        wizardProvider.loadUserWeddingFromSupabase(authProvider.userProfile!.id, ecoProvider: ecoProvider);
       }
     });
   }
