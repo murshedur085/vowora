@@ -13,6 +13,50 @@ class WeddingScheduleScreen extends StatelessWidget {
     final provider = Provider.of<WeddingEcosystemProvider>(context);
     final isClient = provider.activeRole == UserRole.client;
     final schedule = provider.scheduleItems;
+    final List<WeddingScheduleItemModel> displaySchedule = schedule.isNotEmpty
+        ? schedule
+        : [
+            WeddingScheduleItemModel(
+              id: 'ds1',
+              weddingId: 'demo',
+              timeString: '05:00 PM',
+              title: 'Guest Arrival & Welcome Drink 🍹',
+              description: 'Guests arrive at the venue and enjoy welcome refreshments & mocktails.',
+              location: 'Main Arch & Reception Area',
+            ),
+            WeddingScheduleItemModel(
+              id: 'ds2',
+              weddingId: 'demo',
+              timeString: '06:30 PM',
+              title: 'Nikah & Ring Ceremony 💍',
+              description: 'Official wedding ritual, vow signing, and exchange of rings.',
+              location: 'Main Stage',
+            ),
+            WeddingScheduleItemModel(
+              id: 'ds3',
+              weddingId: 'demo',
+              timeString: '08:00 PM',
+              title: 'Grand Royal Dinner 🍽️',
+              description: 'Traditional wedding feast with Kacchi Biryani & desserts.',
+              location: 'Dining Hall',
+            ),
+            WeddingScheduleItemModel(
+              id: 'ds4',
+              weddingId: 'demo',
+              timeString: '09:30 PM',
+              title: 'Photoshoot & Guest Moments 📸',
+              description: 'Family portraits, candid guest photo sessions, and video reels.',
+              location: 'Photo Stage & Floral Arch',
+            ),
+            WeddingScheduleItemModel(
+              id: 'ds5',
+              weddingId: 'demo',
+              timeString: '10:30 PM',
+              title: 'Cultural Music & Farewell 🎶',
+              description: 'Live acoustic music performance followed by bride & groom farewell.',
+              location: 'Main Stage',
+            ),
+          ];
 
     return Scaffold(
       backgroundColor: VoworaColors.darkBackground,
@@ -55,10 +99,10 @@ class WeddingScheduleScreen extends StatelessWidget {
               ListView.separated(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: schedule.length,
+                itemCount: displaySchedule.length,
                 separatorBuilder: (context, index) => const SizedBox(height: 16),
                 itemBuilder: (context, index) {
-                  final item = schedule[index];
+                  final item = displaySchedule[index];
                   return Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

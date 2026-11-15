@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'vowora_cached_image.dart';
 
 class ConferenceProviderImage extends StatelessWidget {
   const ConferenceProviderImage({
@@ -21,12 +22,13 @@ class ConferenceProviderImage extends StatelessWidget {
     final url = imageUrl?.trim() ?? '';
     if (url.isEmpty) return _placeholder();
 
-    return Image.network(
-      url,
+    return VoworaCachedImage(
+      imageUrl: url,
       width: width,
       height: height,
       fit: fit,
-      errorBuilder: (context, error, stackTrace) => _placeholder(),
+      contextSize: ImageContextSize.card,
+      errorWidget: _placeholder(),
     );
   }
 

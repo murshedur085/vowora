@@ -27,6 +27,7 @@ import '../screens/wedding_ecosystem/service_provider_marketplace_screen.dart';
 import '../screens/wedding_ecosystem/service_provider_profile_screen.dart';
 import '../screens/wedding_ecosystem/service_provider_dashboard_screen.dart';
 import '../screens/wedding_ecosystem/wedding_gallery_screen.dart';
+import '../screens/wedding_ecosystem/wedding_photography_gallery_screen.dart';
 import '../screens/wedding_ecosystem/wedding_schedule_screen.dart';
 import '../screens/checklist/checklist_screen.dart';
 import '../screens/timeline/timeline_screen.dart';
@@ -39,6 +40,7 @@ import '../screens/profile/mfa_setup_screen.dart';
 import '../screens/legal/terms_privacy_screen.dart';
 import '../screens/conference/c_landingpage.dart';
 import '../screens/conference/c_hall_explore_screen.dart';
+import '../screens/coming_soon_screen.dart';
 
 // confarance  screens
 import '../screens/conference/c_food_page.dart';
@@ -76,6 +78,7 @@ class AppRoutes {
   static const String serviceProviderProfile = '/service-provider-profile';
   static const String serviceProviderDashboard = '/service-provider-dashboard';
   static const String weddingGallery = '/wedding-gallery';
+  static const String weddingPhotographyGallery = '/wedding-photography-gallery';
   static const String weddingSchedule = '/wedding-schedule';
   static const String checklist = '/checklist';
   static const String timeline = '/timeline';
@@ -97,6 +100,9 @@ class AppRoutes {
   static const String conferenceDecoration = '/conference/decoration';
   static const String conferencePhotography = '/conference/photography';
   static const String conferenceTransport = '/conference/transport';
+  static const String anniversary = '/anniversary';
+  static const String gatherings = '/gatherings';
+  static const String customEvent = '/custom-event';
 
   static Map<String, WidgetBuilder> get routes {
     return {
@@ -130,6 +136,7 @@ class AppRoutes {
       serviceProviderDashboard: (context) =>
           const ServiceProviderDashboardScreen(),
       weddingGallery: (context) => const WeddingGalleryScreen(),
+      weddingPhotographyGallery: (context) => const WeddingPhotographyGalleryScreen(),
       weddingSchedule: (context) => const WeddingScheduleScreen(),
       checklist: (context) => const ChecklistScreen(),
       timeline: (context) => const TimelineScreen(),
@@ -151,6 +158,18 @@ class AppRoutes {
       conferenceDecoration: (context) => const ConferenceDecorationPage(),
       conferencePhotography: (context) => const ConferencePhotographyPage(),
       conferenceTransport: (context) => const ConferenceTransportPage(),
+      anniversary: (context) => const ComingSoonScreen(
+            title: 'Anniversary Celebration',
+            subtitle: 'Celebrate your milestones with bespoke luxury planning tools.',
+          ),
+      gatherings: (context) => const ComingSoonScreen(
+            title: 'Private Gatherings & Galas',
+            subtitle: 'Plan exquisite dinners, receptions, and family celebrations.',
+          ),
+      customEvent: (context) => const ComingSoonScreen(
+            title: 'Custom Event Planner',
+            subtitle: 'Tailored luxury event creation designed around your vision.',
+          ),
     };
   }
 }

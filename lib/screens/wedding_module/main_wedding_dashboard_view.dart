@@ -131,6 +131,7 @@ class _MainWeddingDashboardViewState extends State<MainWeddingDashboardView> {
               children: [
                 _buildOverviewTab(context, provider, booking),
                 _buildPlanningModulesTab(context, provider, booking),
+                _buildPhotographyTab(context, provider, booking),
                 _buildGuestsTab(context, provider, booking),
                 _buildBudgetTab(context, provider, booking),
                 _buildMoreTab(context, provider, booking),
@@ -163,6 +164,10 @@ class _MainWeddingDashboardViewState extends State<MainWeddingDashboardView> {
                 icon: Icon(Icons.auto_awesome_mosaic_outlined),
                 activeIcon: Icon(Icons.auto_awesome_mosaic_rounded),
                 label: 'Management'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.camera_alt_outlined),
+                activeIcon: Icon(Icons.camera_alt_rounded),
+                label: 'Photography'),
             BottomNavigationBarItem(
                 icon: Icon(Icons.people_outline_rounded),
                 activeIcon: Icon(Icons.people_rounded),
@@ -570,11 +575,214 @@ class _MainWeddingDashboardViewState extends State<MainWeddingDashboardView> {
           _buildTile(context, 'Decoration Themes', '${booking.selectedDecorations.length} Selected', Icons.auto_awesome, () => _showEditDecorationModal(context, provider)),
           _buildTile(context, 'Catering & Menu', 'Menu: ${booking.selectedCateringPackage?.packageName ?? 'Standard'}', Icons.restaurant, () => _showEditCateringModal(context, provider)),
           _buildTile(context, 'Photography & Media', '${booking.selectedMediaServices.length} Services Booked', Icons.camera_alt, () => _showEditPhotographyModal(context, provider)),
+          _buildTile(context, 'Wedding Photography Gallery', 'Google Drive Live Photos', Icons.photo_library_rounded, () => Navigator.pushNamed(context, AppRoutes.weddingPhotographyGallery)),
           _buildTile(context, 'Entertainment & Music', '${booking.selectedEntertainment.length} Acts Booked', Icons.music_note, () => _showEditEntertainmentModal(context, provider)),
           _buildTile(context, 'Guests List', '${booking.guestsList.length} Guests', Icons.people, () => _showEditGuestsModal(context, provider)),
           _buildTile(context, 'Digital Invitation', 'Theme: ${booking.invitationTheme.name}', Icons.mark_email_read, () => _showEditInvitationModal(context, provider)),
           _buildTile(context, 'Checklist Tasks', '${booking.tasksList.length} Tasks', Icons.checklist, () => _showEditChecklistModal(context, provider)),
           _buildTile(context, 'Payments & Receipts', 'Paid: ৳${booking.totalPaidAmount.toStringAsFixed(0)}', Icons.receipt_long, () => _showEditPaymentsModal(context, provider)),
+        ],
+      ),
+    );
+  }
+
+  // --- TAB 2: PHOTOGRAPHY TAB ---
+  Widget _buildPhotographyTab(
+      BuildContext context, WeddingWizardProvider provider, WeddingBookingModel booking) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Wedding Photography & Cinema 📸',
+            style: GoogleFonts.playfairDisplay(
+              color: Colors.white,
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Manage Google Drive photo folder, live guest moments & photography services.',
+            style: GoogleFonts.plusJakartaSans(
+              color: VoworaColors.champagneGold,
+              fontSize: 12,
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // 1. Prominent Google Drive Photo Gallery Banner
+          GestureDetector(
+            onTap: () => Navigator.pushNamed(context, AppRoutes.weddingPhotographyGallery),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    VoworaColors.champagneGold.withValues(alpha: 0.35),
+                    const Color(0xFF2C2219),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(color: VoworaColors.champagneGold, width: 1.5),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: VoworaColors.champagneGold.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Icon(Icons.photo_library_rounded, color: VoworaColors.champagneGold, size: 32),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Open Google Drive Gallery 📸',
+                          style: GoogleFonts.playfairDisplay(
+                            color: Colors.white,
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Browse live wedding photos, sync Google Drive folder & view guest uploads.',
+                          style: GoogleFonts.plusJakartaSans(
+                            color: VoworaColors.champagneGold,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Icon(Icons.arrow_forward_ios_rounded, color: VoworaColors.champagneGold, size: 18),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // 2. Quick Action Buttons
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () => Navigator.pushNamed(context, AppRoutes.weddingPhotographyGallery),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: VoworaColors.champagneGold,
+                    foregroundColor: const Color(0xFF141210),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  ),
+                  icon: const Icon(Icons.folder_shared_rounded, size: 20),
+                  label: Text('Configure Drive', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, fontSize: 13)),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () => _showEditPhotographyModal(context, provider),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    side: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  ),
+                  icon: const Icon(Icons.camera_alt_outlined, size: 20),
+                  label: Text('Edit Media Services', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, fontSize: 12)),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+
+          // 3. Booked Photography Services Summary
+          Text(
+            'Booked Photography Services (${booking.selectedMediaServices.length})',
+            style: GoogleFonts.playfairDisplay(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          if (booking.selectedMediaServices.isEmpty)
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.06),
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+              ),
+              child: Center(
+                child: Column(
+                  children: [
+                    const Icon(Icons.linked_camera_outlined, color: Colors.white38, size: 40),
+                    const SizedBox(height: 8),
+                    Text(
+                      'No photography packages booked yet.',
+                      style: GoogleFonts.plusJakartaSans(color: Colors.white60, fontSize: 13),
+                    ),
+                    const SizedBox(height: 12),
+                    ElevatedButton(
+                      onPressed: () => _showEditPhotographyModal(context, provider),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: VoworaColors.champagneGold,
+                        foregroundColor: Colors.black,
+                      ),
+                      child: const Text('Add Media Packages'),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: booking.selectedMediaServices.length,
+              separatorBuilder: (context, index) => const SizedBox(height: 10),
+              itemBuilder: (context, index) {
+                final service = booking.selectedMediaServices[index];
+                return Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: VoworaColors.champagneGold.withValues(alpha: 0.3)),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.photo_camera_rounded, color: VoworaColors.champagneGold, size: 28),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              service.title,
+                              style: GoogleFonts.playfairDisplay(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
+                            ),
+                            Text(
+                              '⏱️ ${service.duration} • ৳${(service.price / 1000).toStringAsFixed(0)}k',
+                              style: GoogleFonts.plusJakartaSans(color: VoworaColors.champagneGold, fontSize: 11),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
         ],
       ),
     );
@@ -1662,9 +1870,8 @@ class _MainWeddingDashboardViewState extends State<MainWeddingDashboardView> {
                     child: mediaServices.isEmpty
                         ? Center(child: Text('No photography or media services added yet.', style: GoogleFonts.plusJakartaSans(color: Colors.white54, fontSize: 13)))
                         : ListView.separated(
-                            shrinkWrap: true,
                             itemCount: mediaServices.length,
-                            separatorBuilder: (_, __) => const SizedBox(height: 8),
+                            separatorBuilder: (context, index) => const SizedBox(height: 8),
                             itemBuilder: (context, index) {
                               final item = mediaServices[index];
                               return Container(
@@ -1928,9 +2135,8 @@ class _MainWeddingDashboardViewState extends State<MainWeddingDashboardView> {
                     child: tasks.isEmpty
                         ? Center(child: Text('No checklist tasks added yet.', style: GoogleFonts.plusJakartaSans(color: Colors.white54, fontSize: 13)))
                         : ListView.separated(
-                            shrinkWrap: true,
                             itemCount: tasks.length,
-                            separatorBuilder: (_, __) => const SizedBox(height: 6),
+                            separatorBuilder: (context, index) => const SizedBox(height: 6),
                             itemBuilder: (context, index) {
                               final task = tasks[index];
                               final isDone = task.status == TaskStatus.completed;

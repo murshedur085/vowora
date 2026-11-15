@@ -14,6 +14,7 @@ class IntroScreen extends StatefulWidget {
 class _IntroScreenState extends State<IntroScreen> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
+  Timer? _navigationTimer;
 
   @override
   void initState() {
@@ -41,7 +42,7 @@ class _IntroScreenState extends State<IntroScreen> with SingleTickerProviderStat
     });
 
     // ৪. ৪ সেকেন্ড পর স্ট্যাটাস অনুযায়ী সঠিক স্ক্রিনে নেভিগেট হবে
-    Timer(const Duration(seconds: 4), () {
+    _navigationTimer = Timer(const Duration(seconds: 4), () {
       if (mounted) {
         final authProvider = Provider.of<AuthProvider>(context, listen: false);
         if (authProvider.needsMfaVerification) {
@@ -57,6 +58,7 @@ class _IntroScreenState extends State<IntroScreen> with SingleTickerProviderStat
 
   @override
   void dispose() {
+    _navigationTimer?.cancel();
     _controller.dispose(); // মেমরি লিক এড়াতে কন্ট্রোলার ডিসপোজ করুন
     super.dispose();
   }

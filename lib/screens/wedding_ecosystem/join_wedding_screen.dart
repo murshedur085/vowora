@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/theme/vowora_theme.dart';
 import '../../providers/wedding_ecosystem_provider.dart';
 import '../../routes/app_routes.dart';
@@ -14,6 +15,40 @@ class JoinWeddingScreen extends StatefulWidget {
 
 class _JoinWeddingScreenState extends State<JoinWeddingScreen> {
   final TextEditingController _codeCtrl = TextEditingController(text: 'WED-8F42K9');
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedCode();
+  }
+
+  Future<void> _loadSavedCode() async {
+    final provider = Provider.of<WeddingEcosystemProvider>(context, listen: false);
+
+    // 1. If guest has already joined an event, jump directly to Guest Event Portal!
+    if (provider.joinedGuestWedding != null) {
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, AppRoutes.guestWeddingPage);
+      }
+      return;
+    }
+
+    // 2. Otherwise load saved code from SharedPreferences & auto-verify
+    final prefs = await SharedPreferences.getInstance();
+    final savedCode = prefs.getString('last_joined_guest_code');
+    if (savedCode != null && savedCode.isNotEmpty) {
+      if (mounted) {
+        setState(() {
+          _codeCtrl.text = savedCode;
+        });
+      }
+      // Auto-verify saved code and jump directly to guest portal!
+      final bool isJoined = await provider.joinWeddingByCode(savedCode);
+      if (isJoined && mounted) {
+        Navigator.pushReplacementNamed(context, AppRoutes.guestWeddingPage);
+      }
+    }
+  }
 
   @override
   void dispose() {

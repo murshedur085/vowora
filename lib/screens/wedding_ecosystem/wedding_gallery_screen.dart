@@ -5,6 +5,7 @@ import '../../core/theme/vowora_theme.dart';
 import '../../models/wedding_ecosystem_models.dart';
 import '../../providers/wedding_ecosystem_provider.dart';
 import '../../routes/app_routes.dart';
+import '../../widgets/vowora_cached_image.dart';
 
 class WeddingGalleryScreen extends StatefulWidget {
   const WeddingGalleryScreen({super.key});
@@ -168,14 +169,10 @@ class _WeddingGalleryScreenState extends State<WeddingGalleryScreen> {
                       child: Stack(
                         fit: StackFit.expand,
                         children: [
-                          Image.network(
-                            photo.imageUrl,
+                          VoworaCachedImage(
+                            imageUrl: photo.imageUrl,
                             fit: BoxFit.cover,
-                            frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-                              if (wasSynchronouslyLoaded || frame != null) return child;
-                              return Image.asset('assets/images/wedding_background.png', fit: BoxFit.cover);
-                            },
-                            errorBuilder: (c, e, s) => Image.asset('assets/images/wedding_background.png', fit: BoxFit.cover),
+                            contextSize: ImageContextSize.card,
                           ),
                           DecoratedBox(
                             decoration: BoxDecoration(
@@ -246,29 +243,12 @@ class _WeddingGalleryScreenState extends State<WeddingGalleryScreen> {
           ),
           child: Row(
             children: [
-              ClipRRect(
+              VoworaCachedImage(
+                imageUrl: photo.imageUrl,
+                width: 75,
+                height: 75,
+                contextSize: ImageContextSize.thumbnail,
                 borderRadius: BorderRadius.circular(14),
-                child: Image.network(
-                  photo.imageUrl,
-                  width: 75,
-                  height: 75,
-                  fit: BoxFit.cover,
-                  frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-                    if (wasSynchronouslyLoaded || frame != null) return child;
-                    return Image.asset(
-                      'assets/images/wedding_background.png',
-                      width: 75,
-                      height: 75,
-                      fit: BoxFit.cover,
-                    );
-                  },
-                  errorBuilder: (c, e, s) => Image.asset(
-                    'assets/images/wedding_background.png',
-                    width: 75,
-                    height: 75,
-                    fit: BoxFit.cover,
-                  ),
-                ),
               ),
               const SizedBox(width: 14),
               Expanded(

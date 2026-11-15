@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../models/birthday/birthday_food_menu.dart';
 import '../../models/birthday/birthday_venue.dart';
+import '../../widgets/vowora_cached_image.dart';
 import 'core/birthday_theme.dart';
 
 /// Displays the per-item food menu for a selected birthday venue.
@@ -178,7 +179,7 @@ class _BirthdayFoodMenuScreenState extends State<BirthdayFoodMenuScreen> {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        separatorBuilder: (context, index) => const SizedBox(width: 8),
         itemCount: BirthdayFoodCategory.values.length,
         itemBuilder: (context, index) {
           final cat = BirthdayFoodCategory.values[index];
@@ -269,27 +270,12 @@ class _BirthdayFoodMenuScreenState extends State<BirthdayFoodMenuScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Food image
-              ClipRRect(
+              VoworaCachedImage(
+                imageUrl: item.imageUrl,
+                width: 90,
+                height: 90,
+                contextSize: ImageContextSize.thumbnail,
                 borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  item.imageUrl,
-                  width: 90,
-                  height: 90,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
-                    width: 90,
-                    height: 90,
-                    decoration: BoxDecoration(
-                      color: BirthdayTheme.champagneGold,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(
-                      Icons.restaurant_rounded,
-                      color: BirthdayTheme.champagneBorder,
-                      size: 36,
-                    ),
-                  ),
-                ),
               ),
               const SizedBox(width: 14),
 

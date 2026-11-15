@@ -7,6 +7,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/wedding_ecosystem_provider.dart';
 import '../../routes/app_routes.dart';
 import '../../widgets/guest_gate_dialog.dart';
+import '../../widgets/vowora_cached_image.dart';
 
 class ServiceProviderProfileScreen extends StatelessWidget {
   const ServiceProviderProfileScreen({super.key});
@@ -41,14 +42,10 @@ class ServiceProviderProfileScreen extends StatelessWidget {
               background: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.network(
-                    providerItem.profileImageUrl,
+                  VoworaCachedImage(
+                    imageUrl: providerItem.profileImageUrl,
                     fit: BoxFit.cover,
-                    frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-                      if (wasSynchronouslyLoaded || frame != null) return child;
-                      return Image.asset('assets/images/wedding_background.png', fit: BoxFit.cover);
-                    },
-                    errorBuilder: (c, e, s) => Image.asset('assets/images/wedding_background.png', fit: BoxFit.cover),
+                    contextSize: ImageContextSize.hero,
                   ),
                   DecoratedBox(
                     decoration: BoxDecoration(
@@ -105,29 +102,12 @@ class ServiceProviderProfileScreen extends StatelessWidget {
                     itemBuilder: (context, index) {
                       return Padding(
                         padding: const EdgeInsets.only(right: 10),
-                        child: ClipRRect(
+                        child: VoworaCachedImage(
+                          imageUrl: providerItem.portfolioImages[index],
+                          width: 140,
+                          height: 120,
+                          contextSize: ImageContextSize.thumbnail,
                           borderRadius: BorderRadius.circular(16),
-                          child: Image.network(
-                            providerItem.portfolioImages[index],
-                            width: 140,
-                            height: 120,
-                            fit: BoxFit.cover,
-                            frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-                              if (wasSynchronouslyLoaded || frame != null) return child;
-                              return Image.asset(
-                                'assets/images/wedding_background.png',
-                                width: 140,
-                                height: 120,
-                                fit: BoxFit.cover,
-                              );
-                            },
-                            errorBuilder: (c, e, s) => Image.asset(
-                              'assets/images/wedding_background.png',
-                              width: 140,
-                              height: 120,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
                         ),
                       );
                     },

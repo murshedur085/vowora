@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../models/birthday/birthday_venue.dart';
 import '../../providers/birthday_provider.dart';
+import '../../widgets/vowora_cached_image.dart';
 import 'core/birthday_theme.dart';
 
 class BirthdayVenueSelectionScreen extends StatelessWidget {
@@ -94,21 +95,13 @@ class BirthdayVenueSelectionScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ClipRRect(
+                VoworaCachedImage(
+                  imageUrl: venue.imageUrl,
+                  height: 180,
+                  width: double.infinity,
+                  contextSize: ImageContextSize.card,
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(20),
-                  ),
-                  child: Image.network(
-                    venue.imageUrl,
-                    height: 180,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    loadingBuilder: (context, child, progress) {
-                      if (progress == null) return child;
-                      return _imageFallback(showLoading: true);
-                    },
-                    errorBuilder: (context, error, stackTrace) =>
-                        _imageFallback(),
                   ),
                 ),
                 Padding(
@@ -201,27 +194,7 @@ class BirthdayVenueSelectionScreen extends StatelessWidget {
     );
   }
 
-  Widget _imageFallback({bool showLoading = false}) {
-    return SizedBox(
-      height: 180,
-      width: double.infinity,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Image.asset(
-            'assets/images/birthday/birthday_decor.jpg',
-            fit: BoxFit.cover,
-          ),
-          if (showLoading)
-            const Center(
-              child: CircularProgressIndicator(
-                color: BirthdayTheme.champagneGoldDeep,
-              ),
-            ),
-        ],
-      ),
-    );
-  }
+
 
   Widget _infoRow(IconData icon, String text) {
     return Row(

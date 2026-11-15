@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../core/theme/vowora_theme.dart';
 import '../../models/wedding_booking_model.dart';
 import '../../providers/wedding_wizard_provider.dart';
+import '../../widgets/vowora_cached_image.dart';
 
 class VenueSelectionStepView extends StatefulWidget {
   const VenueSelectionStepView({super.key});
@@ -132,26 +133,12 @@ class _VenueSelectionStepViewState extends State<VenueSelectionStepView> {
                       borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
                       child: Stack(
                         children: [
-                          Image.network(
-                            venue.imageUrl,
+                          VoworaCachedImage(
+                            imageUrl: venue.imageUrl,
                             height: 140,
                             width: double.infinity,
-                            fit: BoxFit.cover,
-                            frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-                              if (wasSynchronouslyLoaded || frame != null) return child;
-                              return Image.asset(
-                                'assets/images/wedding_background.png',
-                                height: 140,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                              );
-                            },
-                            errorBuilder: (c, e, s) => Image.asset(
-                              'assets/images/wedding_background.png',
-                              height: 140,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                            ),
+                            contextSize: ImageContextSize.card,
+                            borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
                           ),
                           Positioned(
                             top: 10,

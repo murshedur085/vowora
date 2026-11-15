@@ -447,7 +447,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               )
                             else
                               OutlinedButton.icon(
-                                onPressed: () => Navigator.pushNamed(context, AppRoutes.personalInformation),
+                                onPressed: () => _showEditProfileModal(context, Provider.of<AuthProvider>(context, listen: false)),
                                 style: OutlinedButton.styleFrom(
                                   foregroundColor: VoworaColors.champagneGold,
                                   side: const BorderSide(color: VoworaColors.champagneGold, width: 1.2),

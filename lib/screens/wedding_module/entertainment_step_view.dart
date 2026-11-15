@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/vowora_theme.dart';
 import '../../providers/wedding_wizard_provider.dart';
+import '../../widgets/vowora_cached_image.dart';
 
 class EntertainmentStepView extends StatelessWidget {
   const EntertainmentStepView({super.key});
@@ -57,29 +58,12 @@ class EntertainmentStepView extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    ClipRRect(
+                    VoworaCachedImage(
+                      imageUrl: opt.imageUrl,
+                      width: 75,
+                      height: 75,
+                      contextSize: ImageContextSize.thumbnail,
                       borderRadius: BorderRadius.circular(16),
-                      child: Image.network(
-                        opt.imageUrl,
-                        width: 75,
-                        height: 75,
-                        fit: BoxFit.cover,
-                        frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-                          if (wasSynchronouslyLoaded || frame != null) return child;
-                          return Image.asset(
-                            'assets/images/wedding_background.png',
-                            width: 75,
-                            height: 75,
-                            fit: BoxFit.cover,
-                          );
-                        },
-                        errorBuilder: (c, e, s) => Image.asset(
-                          'assets/images/wedding_background.png',
-                          width: 75,
-                          height: 75,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
                     ),
                     const SizedBox(width: 14),
                     Expanded(

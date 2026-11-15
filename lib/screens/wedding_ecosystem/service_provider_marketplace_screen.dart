@@ -6,6 +6,7 @@ import '../../core/theme/vowora_theme.dart';
 import '../../models/wedding_ecosystem_models.dart';
 import '../../providers/wedding_ecosystem_provider.dart';
 import '../../routes/app_routes.dart';
+import '../../widgets/vowora_cached_image.dart';
 
 class ServiceProviderMarketplaceScreen extends StatefulWidget {
   const ServiceProviderMarketplaceScreen({super.key});
@@ -228,29 +229,12 @@ class _ServiceProviderMarketplaceScreenState
         children: [
           Row(
             children: [
-              ClipRRect(
+              VoworaCachedImage(
+                imageUrl: providerItem.profileImageUrl,
+                width: 65,
+                height: 65,
+                contextSize: ImageContextSize.thumbnail,
                 borderRadius: BorderRadius.circular(16),
-                child: Image.network(
-                  providerItem.profileImageUrl,
-                  width: 65,
-                  height: 65,
-                  fit: BoxFit.cover,
-                  frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-                    if (wasSynchronouslyLoaded || frame != null) return child;
-                    return Image.asset(
-                      'assets/images/wedding_background.png',
-                      width: 65,
-                      height: 65,
-                      fit: BoxFit.cover,
-                    );
-                  },
-                  errorBuilder: (c, e, s) => Image.asset(
-                    'assets/images/wedding_background.png',
-                    width: 65,
-                    height: 65,
-                    fit: BoxFit.cover,
-                  ),
-                ),
               ),
               const SizedBox(width: 14),
               Expanded(

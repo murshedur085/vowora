@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../data/conference/conference_seed_data.dart';
 import '../../widgets/conference_hall_availability_section.dart';
+import '../../widgets/vowora_cached_image.dart';
 import '../conference/c_others/booking_bottom_sheet.dart';
 
 Widget _hallImage(
@@ -13,13 +14,13 @@ Widget _hallImage(
   if (imageUrl.isEmpty) {
     return _hallImagePlaceholder(width: width, height: height);
   }
-  return Image.network(
-    imageUrl,
+  return VoworaCachedImage(
+    imageUrl: imageUrl,
     width: width,
     height: height,
     fit: BoxFit.cover,
-    errorBuilder: (context, error, stackTrace) =>
-        _hallImagePlaceholder(width: width, height: height),
+    contextSize: ImageContextSize.card,
+    errorWidget: _hallImagePlaceholder(width: width, height: height),
   );
 }
 

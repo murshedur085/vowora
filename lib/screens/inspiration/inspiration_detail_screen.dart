@@ -5,6 +5,7 @@ import '../../core/theme/vowora_theme.dart';
 import '../../models/inspiration_item.dart';
 import '../../providers/wedding_provider.dart';
 import '../../routes/app_routes.dart';
+import '../../widgets/vowora_cached_image.dart';
 
 class InspirationDetailScreen extends StatelessWidget {
   final InspirationItem item;
@@ -70,14 +71,11 @@ class InspirationDetailScreen extends StatelessWidget {
                 children: [
                   Hero(
                     tag: 'inspiration_${currentItem.id}',
-                    child: currentItem.imageUrl.startsWith('assets/')
-                        ? Image.asset(currentItem.imageUrl, fit: BoxFit.cover)
-                        : Image.network(
-                            currentItem.imageUrl,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                Image.asset('assets/images/wedding_background.png', fit: BoxFit.cover),
-                          ),
+                    child: VoworaCachedImage(
+                      imageUrl: currentItem.imageUrl,
+                      fit: BoxFit.cover,
+                      contextSize: ImageContextSize.hero,
+                    ),
                   ),
                   DecoratedBox(
                     decoration: BoxDecoration(
@@ -263,14 +261,11 @@ class InspirationDetailScreen extends StatelessWidget {
                           child: Stack(
                             fit: StackFit.expand,
                             children: [
-                              relItem.imageUrl.startsWith('assets/')
-                                  ? Image.asset(relItem.imageUrl, fit: BoxFit.cover)
-                                  : Image.network(
-                                      relItem.imageUrl,
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (context, error, stackTrace) =>
-                                          Image.asset('assets/images/wedding_background.png', fit: BoxFit.cover),
-                                    ),
+                              VoworaCachedImage(
+                                imageUrl: relItem.imageUrl,
+                                fit: BoxFit.cover,
+                                contextSize: ImageContextSize.card,
+                              ),
                               DecoratedBox(
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(

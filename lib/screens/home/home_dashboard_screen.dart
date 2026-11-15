@@ -121,9 +121,8 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
               SizedBox(
                 height: 340,
                 child: ListView.separated(
-                  shrinkWrap: true,
                   itemCount: allNotifications.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 10),
+                  separatorBuilder: (context, index) => const SizedBox(height: 10),
                   itemBuilder: (context, index) {
                     final item = allNotifications[index];
                     return Container(

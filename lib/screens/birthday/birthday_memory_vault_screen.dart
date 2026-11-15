@@ -9,6 +9,7 @@ import '../../providers/birthday_provider.dart';
 import '../../models/birthday/birthday_memory.dart';
 import '../../models/birthday/birthday_shared_photo_model.dart';
 import '../../models/birthday/birthday_event.dart';
+import '../../widgets/vowora_cached_image.dart';
 
 class BirthdayMemoryVaultScreen extends StatefulWidget {
   const BirthdayMemoryVaultScreen({super.key});
@@ -426,10 +427,10 @@ class _BirthdayMemoryVaultScreenState extends State<BirthdayMemoryVaultScreen> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            Image.network(
-              photo.imageUrl,
+            VoworaCachedImage(
+              imageUrl: photo.imageUrl,
               fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => _buildImageFallback(),
+              contextSize: ImageContextSize.card,
             ),
             Positioned(
               left: 0,
@@ -556,10 +557,10 @@ class _BirthdayMemoryVaultScreenState extends State<BirthdayMemoryVaultScreen> {
                     panEnabled: true,
                     minScale: 0.5,
                     maxScale: 4.0,
-                    child: Image.network(
-                      photo.imageUrl,
+                    child: VoworaCachedImage(
+                      imageUrl: photo.imageUrl,
                       fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) => _buildImageFallback(),
+                      contextSize: ImageContextSize.full,
                     ),
                   ),
                 ),

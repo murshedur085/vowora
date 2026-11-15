@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../core/services/supabase_database_service.dart';
 import '../models/wedding_booking_model.dart';
 import '../models/wedding_ecosystem_models.dart';
@@ -76,18 +77,21 @@ class WeddingEcosystemProvider extends ChangeNotifier {
     final target = _activeWedding.weddingDate;
     final diff = target.difference(now);
 
-    if (diff.isNegative) {
-      _countdownDays = 0;
-      _countdownHours = 0;
-      _countdownMinutes = 0;
-      _countdownSeconds = 0;
-    } else {
-      _countdownDays = diff.inDays;
-      _countdownHours = diff.inHours % 24;
-      _countdownMinutes = diff.inMinutes % 60;
-      _countdownSeconds = diff.inSeconds % 60;
+    final newDays = diff.isNegative ? 0 : diff.inDays;
+    final newHours = diff.isNegative ? 0 : diff.inHours % 24;
+    final newMinutes = diff.isNegative ? 0 : diff.inMinutes % 60;
+    final newSeconds = diff.isNegative ? 0 : diff.inSeconds % 60;
+
+    if (newDays != _countdownDays ||
+        newHours != _countdownHours ||
+        newMinutes != _countdownMinutes ||
+        newSeconds != _countdownSeconds) {
+      _countdownDays = newDays;
+      _countdownHours = newHours;
+      _countdownMinutes = newMinutes;
+      _countdownSeconds = newSeconds;
+      notifyListeners();
     }
-    notifyListeners();
   }
 
   @override
@@ -438,6 +442,12 @@ class WeddingEcosystemProvider extends ChangeNotifier {
 
         _activeRole = UserRole.guest;
         _subscribeToRealtimeStreams(cleanCode);
+
+        // Save last joined secret code permanently so guest doesn't need to re-enter code
+        SharedPreferences.getInstance().then((prefs) {
+          prefs.setString('last_joined_guest_code', cleanCode);
+        });
+
         notifyListeners();
         return true;
       }
@@ -448,11 +458,24 @@ class WeddingEcosystemProvider extends ChangeNotifier {
       _joinedGuestWedding = _activeWedding;
       _activeRole = UserRole.guest;
       _subscribeToRealtimeStreams(cleanCode);
+
+      SharedPreferences.getInstance().then((prefs) {
+        prefs.setString('last_joined_guest_code', cleanCode);
+      });
+
       notifyListeners();
       return true;
     }
 
     return false;
+  }
+
+  Future<void> leaveGuestEvent() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('last_joined_guest_code');
+    _joinedGuestWedding = null;
+    _activeRole = UserRole.client;
+    notifyListeners();
   }
 
   void clearSessionData() {
